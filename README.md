@@ -18,7 +18,7 @@
 [CC img]: https://img.shields.io/codeclimate/github/ausaccessfed/valhammer.svg
 [CS img]: https://img.shields.io/coveralls/ausaccessfed/valhammer.svg
 
-Automatic validations based on database schema. (As seen by ActiveRecord)
+Automatically validate ActiveRecord models based on the database schema.
 
 Author: Shaun Mangelsdorf
 
