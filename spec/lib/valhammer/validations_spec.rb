@@ -23,8 +23,23 @@ RSpec.describe Valhammer::Validations do
 
   subject { Resource.validators }
 
+  class Organisation < ActiveRecord::Base
+    valhammer
+
+    has_many :resources
+    has_many :capabilities
+  end
+
   class Resource < ActiveRecord::Base
     valhammer
+
+    belongs_to :organisation
+  end
+
+  class Capability < ActiveRecord::Base
+    valhammer
+
+    belongs_to :organisation
   end
 
   context 'with non-nullable columns' do
@@ -40,6 +55,21 @@ RSpec.describe Valhammer::Validations do
     it { is_expected.not_to include(a_validator_for(:id, :uniqueness)) }
     it { is_expected.to include(a_validator_for(:identifier, :uniqueness)) }
     it { is_expected.not_to include(a_validator_for(:mail, :uniqueness)) }
+  end
+
+  context 'with a composite unique index' do
+    subject { Capability.validators }
+
+    let(:opts) { { scope: ['organisation_id'], case_sensitive: true } }
+    it { is_expected.to include(a_validator_for(:name, :uniqueness, opts)) }
+  end
+
+  context 'with duplicate unique indexes' do
+    subject { Organisation.validators }
+
+    it { is_expected.not_to include(a_validator_for(:name, :uniqueness)) }
+    it { is_expected.not_to include(a_validator_for(:country, :uniqueness)) }
+    it { is_expected.not_to include(a_validator_for(:city, :uniqueness)) }
   end
 
   context 'with an integer column' do

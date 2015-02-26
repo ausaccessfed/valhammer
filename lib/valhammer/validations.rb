@@ -30,9 +30,14 @@ module Valhammer
     end
 
     def valhammer_unique(opts, column)
-      @valhammer_indexes.any? do |i|
-        opts[:uniqueness] = true if i.unique && i.columns.last == column.name
+      unique_keys = @valhammer_indexes.select do |i|
+        i.unique && i.columns.last == column.name
       end
+
+      return unless unique_keys.one?
+
+      scope = unique_keys.first.columns[0..-2]
+      opts[:uniqueness] = scope.empty? ? true : { scope: scope }
     end
 
     def valhammer_numeric(opts, column)
