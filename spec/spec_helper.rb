@@ -1,4 +1,7 @@
+Bundler.setup
+
 require 'valhammer'
+require_relative 'db/setup.rb'
 
 RSpec.configure do |config|
   config.expect_with :rspec do |expectations|
