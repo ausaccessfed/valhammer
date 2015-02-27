@@ -62,12 +62,12 @@ class Widget < ActiveRecord::Base
 end
 ```
 
-Supported validations are:
+Generated validations are:
 
 * `:presence` &mdash; added to non-nullable columns
 * `:uniqueness` &mdash; added to match unique keys
 * `:numericality` &mdash; added to `integer`/`decimal` columns with the
-  `only_integer` option set appopriately
+  `only_integer` option set appropriately
 * `:length` &mdash; added to `string` columns to ensure the value fits in the
   column
 
@@ -81,7 +81,8 @@ end
 
 ## Composite Unique Keys
 
-A composite unique key, for example:
+When Valhammer encounters a composite unique key, it inspects the columns
+involved in the key and uses them to build a `scope`. For example:
 
 ```ruby
 create_table(:widgets) do |t|
@@ -129,9 +130,9 @@ class OrderUpdate < ActiveRecord::Base
 end
 ```
 
-In the case where multiple unique keys resolve to the same column, for example
-(another contrived example):
-
+In the case where multiple unique keys have the same column in the last
+position, Valhammer is unable to determine which is the "authoritative" scope
+for the validation. Take the following contrived example:
 
 ```ruby
 create_table(:order_payment) do |t|
