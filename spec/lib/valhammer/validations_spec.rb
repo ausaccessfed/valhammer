@@ -103,7 +103,7 @@ RSpec.describe Valhammer::Validations do
     let(:klass) do
       opts = { disabled_validator => false }
       Class.new(ActiveRecord::Base) do
-        self.table_name = 'people'
+        self.table_name = 'resources'
         valhammer(opts)
       end
     end

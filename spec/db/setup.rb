@@ -1,6 +1,8 @@
 require 'active_record'
 require 'logger'
 
+FileUtils.rm_f 'spec/db/test.sqlite3'
+
 ActiveRecord::Base.logger = Logger.new($stderr)
 ActiveRecord::Base.extend Valhammer::Validations
 
