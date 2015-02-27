@@ -8,10 +8,10 @@ Gem::Specification.new do |spec|
   spec.version       = Valhammer::VERSION
   spec.authors       = ['Shaun Mangelsdorf']
   spec.email         = ['s.mangelsdorf@gmail.com']
-  spec.summary       = 'TODO: Write a short summary. Required.'
-  spec.description   = 'TODO: Write a longer description. Optional.'
-  spec.homepage      = ''
-  spec.license       = 'MIT'
+  spec.summary       = 'Automatically validate ActiveRecord models based on ' \
+                       'the database schema.'
+  spec.homepage      = 'https://github.com/ausaccessfed/valhammer'
+  spec.license       = 'Apache-2.0'
 
   spec.files         = `git ls-files -z`.split("\x0")
   spec.executables   = spec.files.grep(/^bin\//) { |f| File.basename(f) }
