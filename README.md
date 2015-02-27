@@ -18,7 +18,7 @@
 [CC img]: https://img.shields.io/codeclimate/github/ausaccessfed/valhammer.svg
 [CS img]: https://img.shields.io/coveralls/ausaccessfed/valhammer.svg
 
-Automatic validations based on database schema. (As seen by ActiveRecord)
+Automatically validate ActiveRecord models based on the database schema.
 
 Author: Shaun Mangelsdorf
 
@@ -54,7 +54,101 @@ bundle install
 
 ## Usage
 
-TODO
+Call the `valhammer` method inside your model class:
+
+```ruby
+class Widget < ActiveRecord::Base
+  valhammer
+end
+```
+
+Generated validations are:
+
+* `:presence` &mdash; added to non-nullable columns
+* `:uniqueness` &mdash; added to match unique keys
+* `:numericality` &mdash; added to `integer`/`decimal` columns with the
+  `only_integer` option set appropriately
+* `:length` &mdash; added to `string` columns to ensure the value fits in the
+  column
+
+To disable a kind of validation, pass an option to the `valhammer` method:
+
+```ruby
+class Widget < ActiveRecord::Base
+  valhammer uniqueness: false
+end
+```
+
+## Composite Unique Keys
+
+When Valhammer encounters a composite unique key, it inspects the columns
+involved in the key and uses them to build a `scope`. For example:
+
+```ruby
+create_table(:widgets) do |t|
+  t.string :supplier_code, null: false, default: nil
+  t.string :item_code, null: false, default: nil
+
+  t.index [:supplier_code, :item_code], unique: true
+end
+```
+
+When this table is examined by valhammer, the uniqueness validation created will
+be the same as if you had written:
+
+```ruby
+class Widget < ActiveRecord::Base
+  validates :item_code, uniqueness: { scope: :supplier_code }
+end
+```
+
+That is, the last column in the key is the field which gets validated, and the
+other columns form the `scope` argument.
+
+## Duplicate Unique Keys
+
+Valhammer is able to handle the simple case when multiple unique keys reference
+the same field, as in the following contrived example:
+
+```ruby
+create_table(:order_update) do |t|
+  t.belongs_to :order
+  t.belongs_to :customer
+  t.string :state
+
+  t.index [:order_id, :customer_id], unique: true
+  t.index [:order_id, :customer_id, :state], unique: true
+end
+```
+
+Uniqueness validations are created as though the model was defined using:
+
+```ruby
+class OrderUpdate < ActiveRecord::Base
+  validates :customer_id, uniqueness: { scope: :order_id }
+  validates :state, uniqueness: { scope: [:order_id, :customer_id] }
+end
+```
+
+In the case where multiple unique keys have the same column in the last
+position, Valhammer is unable to determine which is the "authoritative" scope
+for the validation. Take the following contrived example:
+
+```ruby
+create_table(:order_payment) do |t|
+  t.belongs_to :order
+  t.belongs_to :customer
+  t.string :reference
+  t.boolean :complete
+  t.integer :amount
+
+  t.index [:order_id, :customer_id], unique: true
+  t.index [:reference, :customer_id], unique: true
+end
+```
+
+Valhammer is unable to resolve which `scope` to apply, so no `uniqueness`
+validation is applied.
 
 ## Contributing
 
