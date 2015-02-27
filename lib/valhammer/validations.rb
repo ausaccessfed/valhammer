@@ -1,35 +1,44 @@
 module Valhammer
   module Validations
-    def valhammer
+    VALHAMMER_DEFAULT_OPTS = { presence: true, uniqueness: true,
+                               numericality: true, length: true }.freeze
+    private_constant :VALHAMMER_DEFAULT_OPTS
+
+    def valhammer(opts = {})
       @valhammer_indexes ||= connection.indexes(table_name)
+      opts = VALHAMMER_DEFAULT_OPTS.merge(opts)
 
       columns_hash.each do |name, column|
         next if name == primary_key
 
-        opts = valhammer_opts(column)
-        validates(name, opts) unless opts.empty?
+        validations = valhammer_validations(column, opts)
+        validates(name, validations) unless validations.empty?
       end
     end
 
     private
 
-    def valhammer_opts(column)
+    def valhammer_validations(column, opts)
       logger.debug("Valhammer generating options for #{valhammer_info(column)}")
-      opts = {}
-      valhammer_presence(opts, column)
-      valhammer_unique(opts, column)
-      valhammer_numeric(opts, column)
-      valhammer_length(opts, column)
+      validations = {}
+      valhammer_presence(validations, column, opts)
+      valhammer_unique(validations, column, opts)
+      valhammer_numeric(validations, column, opts)
+      valhammer_length(validations, column, opts)
       logger.debug("Valhammer options for #{valhammer_log_key(column)} " \
-                   "are: #{opts.inspect}")
-      opts
+                   "are: #{validations.inspect}")
+      validations
     end
 
-    def valhammer_presence(opts, column)
-      opts[:presence] = true unless column.null
+    def valhammer_presence(validations, column, opts)
+      return unless opts[:presence]
+
+      validations[:presence] = true unless column.null
     end
 
-    def valhammer_unique(opts, column)
+    def valhammer_unique(validations, column, opts)
+      return unless opts[:uniqueness]
+
       unique_keys = @valhammer_indexes.select do |i|
         i.unique && i.columns.last == column.name
       end
@@ -37,22 +46,24 @@ module Valhammer
       return unless unique_keys.one?
 
       scope = unique_keys.first.columns[0..-2]
-      opts[:uniqueness] = scope.empty? ? true : { scope: scope }
+      validations[:uniqueness] = scope.empty? ? true : { scope: scope }
     end
 
-    def valhammer_numeric(opts, column)
+    def valhammer_numeric(validations, column, opts)
+      return unless opts[:numericality]
+
       case column.type
       when :integer
-        opts[:numericality] = { only_integer: true }
+        validations[:numericality] = { only_integer: true }
       when :decimal
-        opts[:numericality] = { only_integer: false }
+        validations[:numericality] = { only_integer: false }
       end
     end
 
-    def valhammer_length(opts, column)
-      return unless column.type == :string && column.limit
+    def valhammer_length(validations, column, opts)
+      return unless opts[:length] && column.type == :string && column.limit
 
-      opts[:length] = { maximum: column.limit }
+      validations[:length] = { maximum: column.limit }
     end
 
     def valhammer_log_key(column)

@@ -21,6 +21,8 @@ RSpec.describe Valhammer::Validations do
     end
   end
 
+  RSpec::Matchers.define_negated_matcher :not_include, :include
+
   subject { Resource.validators }
 
   class Organisation < ActiveRecord::Base
@@ -84,5 +86,66 @@ RSpec.describe Valhammer::Validations do
 
   context 'with a limited length string' do
     it { is_expected.to include(a_validator_for(:name, :length, maximum: 100)) }
+  end
+
+  context 'with disabled validations' do
+    around do |example|
+      old = ActiveRecord::Base.logger
+
+      begin
+        ActiveRecord::Base.logger = Logger.new('/dev/null')
+        example.run
+      ensure
+        ActiveRecord::Base.logger = old
+      end
+    end
+
+    let(:klass) do
+      opts = { disabled_validator => false }
+      Class.new(ActiveRecord::Base) do
+        self.table_name = 'people'
+        valhammer(opts)
+      end
+    end
+
+    subject { klass.validators }
+
+    context ':presence' do
+      let(:disabled_validator) { :presence }
+
+      it 'excludes the presence validator' do
+        expect(subject)
+          .to not_include(a_validator_for(:name, :presence))
+          .and not_include(a_validator_for(:mail, :presence))
+          .and not_include(a_validator_for(:identifier, :presence))
+          .and not_include(a_validator_for(:gpa, :presence))
+      end
+    end
+
+    context ':uniqueness' do
+      let(:disabled_validator) { :uniqueness }
+
+      it 'excludes the uniqueness validator' do
+        expect(subject)
+          .not_to include(a_validator_for(:identifier, :uniqueness))
+      end
+    end
+
+    context ':numericality' do
+      let(:disabled_validator) { :numericality }
+
+      it 'excludes the numericality validator' do
+        expect(subject).to not_include(a_validator_for(:age, :numericality))
+          .and not_include(a_validator_for(:gpa, :numericality))
+      end
+    end
+
+    context ':length' do
+      let(:disabled_validator) { :length }
+
+      it 'excludes the length validator' do
+        expect(subject).not_to include(a_validator_for(:name, :length))
+      end
+    end
   end
 end
