@@ -1,4 +1,5 @@
 Bundler.setup
+require 'simplecov'
 
 require 'valhammer'
 require_relative 'db/setup.rb'
