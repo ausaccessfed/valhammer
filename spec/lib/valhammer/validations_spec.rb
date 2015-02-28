@@ -46,6 +46,8 @@ RSpec.describe Valhammer::Validations do
 
   context 'with non-nullable columns' do
     it { is_expected.not_to include(a_validator_for(:id, :presence)) }
+    it { is_expected.not_to include(a_validator_for(:created_at, :presence)) }
+    it { is_expected.not_to include(a_validator_for(:updated_at, :presence)) }
     it { is_expected.to include(a_validator_for(:name, :presence)) }
     it { is_expected.to include(a_validator_for(:mail, :presence)) }
     it { is_expected.to include(a_validator_for(:identifier, :presence)) }

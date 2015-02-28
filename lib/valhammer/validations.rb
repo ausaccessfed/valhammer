@@ -4,12 +4,15 @@ module Valhammer
                                numericality: true, length: true }.freeze
     private_constant :VALHAMMER_DEFAULT_OPTS
 
+    VALHAMMER_EXCLUDED_FIELDS = %w(created_at updated_at)
+
     def valhammer(opts = {})
       @valhammer_indexes ||= connection.indexes(table_name)
       opts = VALHAMMER_DEFAULT_OPTS.merge(opts)
-
+      excluded_fields = VALHAMMER_EXCLUDED_FIELDS
       columns_hash.each do |name, column|
         next if name == primary_key
+        next if VALHAMMER_EXCLUDED_FIELDS.include?(name)
 
         validations = valhammer_validations(column, opts)
         validates(name, validations) unless validations.empty?
