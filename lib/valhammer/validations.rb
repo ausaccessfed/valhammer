@@ -2,9 +2,10 @@ module Valhammer
   module Validations
     VALHAMMER_DEFAULT_OPTS = { presence: true, uniqueness: true,
                                numericality: true, length: true }.freeze
-    private_constant :VALHAMMER_DEFAULT_OPTS
 
     VALHAMMER_EXCLUDED_FIELDS = %w(created_at updated_at)
+
+    private_constant :VALHAMMER_DEFAULT_OPTS, :VALHAMMER_EXCLUDED_FIELDS
 
     def valhammer(opts = {})
       @valhammer_indexes ||= connection.indexes(table_name)
