@@ -52,6 +52,13 @@ Use Bundler to install the dependency:
 bundle install
 ```
 
+In Rails, Valhammer is automatically added to `ActiveRecord::Base`. If you're
+using ActiveRecord outside of Rails, you may have to do this yourself:
+
+```ruby
+ActiveRecord::Base.extend(Valhammer::Validations)
+```
+
 ## Usage
 
 Call the `valhammer` method inside your model class:
@@ -93,7 +100,7 @@ create_table(:widgets) do |t|
 end
 ```
 
-When this table is examined by valhammer, the uniqueness validation created will
+When this table is examined by Valhammer, the uniqueness validation created will
 be the same as if you had written:
 
 ```ruby
