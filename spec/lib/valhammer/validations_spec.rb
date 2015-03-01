@@ -25,25 +25,6 @@ RSpec.describe Valhammer::Validations do
 
   subject { Resource.validators }
 
-  class Organisation < ActiveRecord::Base
-    valhammer
-
-    has_many :resources
-    has_many :capabilities
-  end
-
-  class Resource < ActiveRecord::Base
-    valhammer
-
-    belongs_to :organisation
-  end
-
-  class Capability < ActiveRecord::Base
-    valhammer
-
-    belongs_to :organisation
-  end
-
   context 'with non-nullable columns' do
     it { is_expected.not_to include(a_validator_for(:id, :presence)) }
     it { is_expected.not_to include(a_validator_for(:created_at, :presence)) }

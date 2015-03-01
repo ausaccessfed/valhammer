@@ -1,8 +1,11 @@
 Bundler.setup
 require 'simplecov'
 
-require 'valhammer'
-require_relative 'db/setup.rb'
+ENV['RAILS_ENV'] = 'test'
+FileUtils.rm_f 'spec/db/test.sqlite3'
+
+require_relative 'dummy/config/environment.rb'
+require_relative 'db/schema.rb'
 
 RSpec.configure do |config|
   config.expect_with :rspec do |expectations|

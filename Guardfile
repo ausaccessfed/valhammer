@@ -7,7 +7,7 @@ guard :rspec, cmd: 'bundle exec rspec' do
   watch(/^spec\/.+_spec\.rb$/)
   watch(/^lib\/(.+)\.rb$/) { |m| "spec/lib/#{m[1]}_spec.rb" }
   watch('spec/spec_helper.rb') { 'spec' }
-  watch(%r{spec/db/.*\.rb}) { 'spec' }
+  watch(%r{spec/(db|dummy)/.*\.rb}) { 'spec' }
 end
 
 guard :rubocop do

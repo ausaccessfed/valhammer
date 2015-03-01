@@ -1,0 +1,5 @@
+---
+url: 'https://rapid.example.com/jwt/authnrequest/research/0vs2aoAbd5bH6HRK'
+secret: '5>O+`=2x%`\=.""f,6KDxV2p|MEE*P<]'
+issuer: 'https://rapid.example.com'
+audience: 'https://service.example.com'
