@@ -8,6 +8,9 @@ ActiveRecord::Schema.define(version: 0) do
     t.string :description, null: true, default: nil
     t.integer :age, null: true, default: nil
     t.decimal :gpa, null: false, default: 3.0
+    t.integer :socialness, null: false, default: 5
+
+    t.timestamps null: false
 
     t.index :identifier, unique: true
   end
@@ -17,6 +20,8 @@ ActiveRecord::Schema.define(version: 0) do
 
     t.string :name, null: false, default: nil
 
+    t.timestamps null: false
+
     t.index [:organisation_id, :name], unique: true
   end
 
@@ -24,6 +29,8 @@ ActiveRecord::Schema.define(version: 0) do
     t.string :name, null: false
     t.string :country, null: false
     t.string :city, null: false
+
+    t.timestamps null: false
 
     t.index [:country, :name], unique: true
     t.index [:city, :name], unique: true

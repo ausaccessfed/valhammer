@@ -2,14 +2,17 @@ module Valhammer
   module Validations
     VALHAMMER_DEFAULT_OPTS = { presence: true, uniqueness: true,
                                numericality: true, length: true }.freeze
-    private_constant :VALHAMMER_DEFAULT_OPTS
+
+    VALHAMMER_EXCLUDED_FIELDS = %w(created_at updated_at)
+
+    private_constant :VALHAMMER_DEFAULT_OPTS, :VALHAMMER_EXCLUDED_FIELDS
 
     def valhammer(opts = {})
       @valhammer_indexes ||= connection.indexes(table_name)
       opts = VALHAMMER_DEFAULT_OPTS.merge(opts)
-
       columns_hash.each do |name, column|
         next if name == primary_key
+        next if VALHAMMER_EXCLUDED_FIELDS.include?(name)
 
         validations = valhammer_validations(column, opts)
         validates(name, validations) unless validations.empty?
@@ -54,9 +57,11 @@ module Valhammer
 
       case column.type
       when :integer
-        validations[:numericality] = { only_integer: true }
+        validations[:numericality] = { only_integer: true,
+                                       allow_nil: column.null }
       when :decimal
-        validations[:numericality] = { only_integer: false }
+        validations[:numericality] = { only_integer: false,
+                                       allow_nil: column.null }
       end
     end
 
