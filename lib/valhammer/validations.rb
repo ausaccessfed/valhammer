@@ -9,7 +9,6 @@ module Valhammer
     def valhammer(opts = {})
       @valhammer_indexes ||= connection.indexes(table_name)
       opts = VALHAMMER_DEFAULT_OPTS.merge(opts)
-      excluded_fields = VALHAMMER_EXCLUDED_FIELDS
       columns_hash.each do |name, column|
         next if name == primary_key
         next if VALHAMMER_EXCLUDED_FIELDS.include?(name)
@@ -57,9 +56,11 @@ module Valhammer
 
       case column.type
       when :integer
-        validations[:numericality] = { only_integer: true }
+        validations[:numericality] = { only_integer: true,
+                                       allow_nil: column.null }
       when :decimal
-        validations[:numericality] = { only_integer: false }
+        validations[:numericality] = { only_integer: false,
+                                       allow_nil: column.null }
       end
     end
 

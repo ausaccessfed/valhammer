@@ -77,12 +77,21 @@ RSpec.describe Valhammer::Validations do
   end
 
   context 'with an integer column' do
-    let(:opts) { { only_integer: true } }
-    it { is_expected.to include(a_validator_for(:age, :numericality, opts)) }
+    context 'with allow_nil' do
+      let(:opts) { { only_integer: true, allow_nil: true } }
+      it { is_expected.to include(a_validator_for(:age, :numericality, opts)) }
+    end
+    context 'without allow_nil' do
+      let(:opts) { { only_integer: true, allow_nil: false } }
+      it 'sets allow_nil to false for socialness' do
+        expect(subject)
+          .to include(a_validator_for(:socialness, :numericality, opts))
+      end
+    end
   end
 
   context 'with a numeric column' do
-    let(:opts) { { only_integer: false } }
+    let(:opts) { { only_integer: false, allow_nil: false } }
     it { is_expected.to include(a_validator_for(:gpa, :numericality, opts)) }
   end
 
