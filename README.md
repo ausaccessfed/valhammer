@@ -61,10 +61,13 @@ ActiveRecord::Base.extend(Valhammer::Validations)
 
 ## Usage
 
-Call the `valhammer` method inside your model class:
+Call the `valhammer` method inside your model class, after any `belongs_to`
+relationships are defined:
 
 ```ruby
 class Widget < ActiveRecord::Base
+  belongs_to :supplier
+
   valhammer
 end
 ```
@@ -82,6 +85,8 @@ To disable a kind of validation, pass an option to the `valhammer` method:
 
 ```ruby
 class Widget < ActiveRecord::Base
+  belongs_to :supplier
+
   valhammer uniqueness: false
 end
 ```
@@ -120,11 +125,11 @@ the same field, as in the following contrived example:
 ```ruby
 create_table(:order_update) do |t|
   t.belongs_to :order
-  t.belongs_to :customer
   t.string :state
+  t.string :identifier
 
-  t.index [:order_id, :customer_id], unique: true
-  t.index [:order_id, :customer_id, :state], unique: true
+  t.index [:order_id, :state], unique: true
+  t.index [:order_id, :state, :identifier], unique: true
 end
 ```
 
@@ -132,8 +137,8 @@ Uniqueness validations are created as though the model was defined using:
 
 ```ruby
 class OrderUpdate < ActiveRecord::Base
-  validates :customer_id, uniqueness: { scope: :order_id }
-  validates :state, uniqueness: { scope: [:order_id, :customer_id] }
+  validates :state, uniqueness: { scope: :order_id }
+  validates :identifier, uniqueness: { scope: [:order_id, :state] }
 end
 ```
 
@@ -142,20 +147,40 @@ position, Valhammer is unable to determine which is the "authoritative" scope
 for the validation. Take the following contrived example:
 
 ```ruby
-create_table(:order_payment) do |t|
+create_table(:order_enquiry) do |t|
   t.belongs_to :order
   t.belongs_to :customer
-  t.string :reference
-  t.boolean :complete
-  t.integer :amount
+  t.string :date
 
-  t.index [:order_id, :customer_id], unique: true
-  t.index [:reference, :customer_id], unique: true
+  t.index [:order_id, :date], unique: true
+  t.index [:customer_id, :date], unique: true
 end
 ```
 
 Valhammer is unable to resolve which `scope` to apply, so no `uniqueness`
 validation is applied.
+
+## Unique Keys and Associations
+
+In the case where a foreign key is the last column in a key, that key will not
+be given a uniqueness validation.
+
+```ruby
+create_table(:order_payment) do |t|
+  t.belongs_to :customer
+  t.string :reference
+  t.boolean :complete
+  t.integer :amount
+
+  t.index [:reference, :customer_id], unique: true
+end
+```
+
+To work around this, put associations first in your unique keys (often a
+[good idea](http://dev.mysql.com/doc/refman/5.6/en/multiple-column-indexes.html)
+anyway, if it means your association queries benefit from the index).
+
+Alternatively, apply the validation yourself using ActiveRecord.
 
 ## Contributing
 

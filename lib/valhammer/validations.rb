@@ -11,23 +11,31 @@ module Valhammer
       @valhammer_indexes ||= connection.indexes(table_name)
       opts = VALHAMMER_DEFAULT_OPTS.merge(opts)
       columns_hash.each do |name, column|
-        next if name == primary_key
-        next if VALHAMMER_EXCLUDED_FIELDS.include?(name)
-
-        validations = valhammer_validations(column, opts)
-        validates(name, validations) unless validations.empty?
+        valhammer_validate(name, column, opts)
       end
     end
 
     private
 
+    def valhammer_validate(name, column, opts)
+      return if valhammer_exclude?(name)
+
+      assoc = valhammer_assoc(name)
+      return validates(assoc, presence: true) if assoc && !column.null
+
+      validations = valhammer_validations(column, opts)
+      validates(name, validations) unless validations.empty?
+    end
+
     def valhammer_validations(column, opts)
       logger.debug("Valhammer generating options for #{valhammer_info(column)}")
+
       validations = {}
       valhammer_presence(validations, column, opts)
       valhammer_unique(validations, column, opts)
       valhammer_numeric(validations, column, opts)
       valhammer_length(validations, column, opts)
+
       logger.debug("Valhammer options for #{valhammer_log_key(column)} " \
                    "are: #{validations.inspect}")
       validations
@@ -78,6 +86,16 @@ module Valhammer
     def valhammer_info(column)
       "#{valhammer_log_key(column)} (type=:#{column.type} " \
         "null=#{column.null || 'false'} limit=#{column.limit || 'nil'})"
+    end
+
+    def valhammer_exclude?(field)
+      field == primary_key || VALHAMMER_EXCLUDED_FIELDS.include?(field)
+    end
+
+    def valhammer_assoc(field)
+      reflect_on_all_associations(:belongs_to).any? do |assoc|
+        return assoc.name if assoc.foreign_key == field
+      end
     end
   end
 end

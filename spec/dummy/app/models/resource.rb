@@ -1,5 +1,5 @@
 class Resource < ActiveRecord::Base
-  valhammer
-
   belongs_to :organisation
+
+  valhammer
 end
