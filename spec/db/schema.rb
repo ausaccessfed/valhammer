@@ -16,7 +16,7 @@ ActiveRecord::Schema.define(version: 0) do
   end
 
   create_table :capabilities, force: true do |t|
-    t.belongs_to :organisation, null: false, default: nil
+    t.belongs_to :organisation, null: true, default: nil
 
     t.string :name, null: false, default: nil
 

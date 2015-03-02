@@ -11,8 +11,8 @@ RSpec.describe Valhammer::Validations do
 
   RSpec::Matchers.define :a_validator_for do |field, kind, opts = nil|
     match do |v|
-      v.is_a?(validation_impl(kind)) && v.attributes == [field.to_s] &&
-        (opts.nil? || v.options == opts)
+      v.is_a?(validation_impl(kind)) && (opts.nil? || v.options == opts) &&
+        v.attributes.map(&:to_s) == [field.to_s]
     end
 
     description do
@@ -34,6 +34,35 @@ RSpec.describe Valhammer::Validations do
     it { is_expected.to include(a_validator_for(:identifier, :presence)) }
     it { is_expected.not_to include(a_validator_for(:description, :presence)) }
     it { is_expected.to include(a_validator_for(:gpa, :presence)) }
+  end
+
+  context 'with a non-nullable association' do
+    it { is_expected.to include(a_validator_for(:organisation, :presence)) }
+
+    it 'excludes numericality validator' do
+      expect(subject)
+        .not_to include(a_validator_for(:organisation, :numericality))
+    end
+
+    it 'excludes validators on the foreign key' do
+      expect(subject)
+        .not_to include(a_validator_for(:organisation_id, :presence))
+      expect(subject)
+        .not_to include(a_validator_for(:organisation_id, :numericality))
+    end
+  end
+
+  context 'with a nullable association' do
+    subject { Capability.validators }
+
+    it { is_expected.not_to include(a_validator_for(:organisation, :presence)) }
+
+    it 'excludes validators on the foreign key' do
+      expect(subject)
+        .not_to include(a_validator_for(:organisation_id, :presence))
+      expect(subject)
+        .not_to include(a_validator_for(:organisation_id, :numericality))
+    end
   end
 
   context 'with a unique index' do
@@ -96,6 +125,9 @@ RSpec.describe Valhammer::Validations do
       opts = { disabled_validator => false }
       Class.new(ActiveRecord::Base) do
         self.table_name = 'resources'
+
+        belongs_to :organisation
+
         valhammer(opts)
       end
     end
@@ -111,6 +143,7 @@ RSpec.describe Valhammer::Validations do
           .and not_include(a_validator_for(:mail, :presence))
           .and not_include(a_validator_for(:identifier, :presence))
           .and not_include(a_validator_for(:gpa, :presence))
+          .and not_include(a_validator_for(:organisation, :presence))
       end
     end
 
