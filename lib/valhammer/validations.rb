@@ -20,13 +20,15 @@ module Valhammer
     def valhammer_validate(name, column, opts)
       return if valhammer_exclude?(name)
 
-      assoc = valhammer_assoc(name)
-      if assoc && !column.null && opts[:presence]
-        return validates(assoc, presence: true)
+      assoc_name = valhammer_assoc_name(name)
+      if assoc_name.nil?
+        validations = valhammer_validations(column, opts)
+        validates(name, validations) unless validations.empty?
+        return
       end
 
-      validations = valhammer_validations(column, opts)
-      validates(name, validations) unless validations.empty?
+      return if column.null || !opts[:presence]
+      validates(assoc_name, presence: true)
     end
 
     def valhammer_validations(column, opts)
@@ -94,10 +96,9 @@ module Valhammer
       field == primary_key || VALHAMMER_EXCLUDED_FIELDS.include?(field)
     end
 
-    def valhammer_assoc(field)
-      reflect_on_all_associations(:belongs_to).any? do |assoc|
-        return assoc.name if assoc.foreign_key == field
-      end
+    def valhammer_assoc_name(field)
+      reflect_on_all_associations(:belongs_to)
+        .find { |a| a.foreign_key == field }.try(:name)
     end
   end
 end

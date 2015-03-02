@@ -43,12 +43,26 @@ RSpec.describe Valhammer::Validations do
       expect(subject)
         .not_to include(a_validator_for(:organisation, :numericality))
     end
+
+    it 'excludes validators on the foreign key' do
+      expect(subject)
+        .not_to include(a_validator_for(:organisation_id, :presence))
+      expect(subject)
+        .not_to include(a_validator_for(:organisation_id, :numericality))
+    end
   end
 
   context 'with a nullable association' do
     subject { Capability.validators }
 
     it { is_expected.not_to include(a_validator_for(:organisation, :presence)) }
+
+    it 'excludes validators on the foreign key' do
+      expect(subject)
+        .not_to include(a_validator_for(:organisation_id, :presence))
+      expect(subject)
+        .not_to include(a_validator_for(:organisation_id, :numericality))
+    end
   end
 
   context 'with a unique index' do
