@@ -21,7 +21,9 @@ module Valhammer
       return if valhammer_exclude?(name)
 
       assoc = valhammer_assoc(name)
-      return validates(assoc, presence: true) if assoc && !column.null
+      if assoc && !column.null && opts[:presence]
+        return validates(assoc, presence: true)
+      end
 
       validations = valhammer_validations(column, opts)
       validates(name, validations) unless validations.empty?

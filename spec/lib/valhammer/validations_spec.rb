@@ -111,6 +111,9 @@ RSpec.describe Valhammer::Validations do
       opts = { disabled_validator => false }
       Class.new(ActiveRecord::Base) do
         self.table_name = 'resources'
+
+        belongs_to :organisation
+
         valhammer(opts)
       end
     end
@@ -126,6 +129,7 @@ RSpec.describe Valhammer::Validations do
           .and not_include(a_validator_for(:mail, :presence))
           .and not_include(a_validator_for(:identifier, :presence))
           .and not_include(a_validator_for(:gpa, :presence))
+          .and not_include(a_validator_for(:organisation, :presence))
       end
     end
 
