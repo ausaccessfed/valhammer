@@ -9,6 +9,7 @@ ActiveRecord::Schema.define(version: 0) do
     t.integer :age, null: true, default: nil
     t.decimal :gpa, null: false, default: 3.0
     t.integer :socialness, null: false, default: 5
+    t.boolean :injected, null: false, default: false
 
     t.timestamps null: false
 
@@ -19,6 +20,7 @@ ActiveRecord::Schema.define(version: 0) do
     t.belongs_to :organisation, null: true, default: nil
 
     t.string :name, null: false, default: nil
+    t.boolean :core, null: true, default: nil
 
     t.timestamps null: false
 
