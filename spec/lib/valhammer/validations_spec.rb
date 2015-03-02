@@ -11,8 +11,8 @@ RSpec.describe Valhammer::Validations do
 
   RSpec::Matchers.define :a_validator_for do |field, kind, opts = nil|
     match do |v|
-      v.is_a?(validation_impl(kind)) && v.attributes == [field.to_s] &&
-        (opts.nil? || v.options == opts)
+      v.is_a?(validation_impl(kind)) && (opts.nil? || v.options == opts) &&
+        v.attributes.map(&:to_s) == [field.to_s]
     end
 
     description do
@@ -25,32 +25,58 @@ RSpec.describe Valhammer::Validations do
 
   subject { Resource.validators }
 
-  class Organisation < ActiveRecord::Base
-    valhammer
-
-    has_many :resources
-    has_many :capabilities
-  end
-
-  class Resource < ActiveRecord::Base
-    valhammer
-
-    belongs_to :organisation
-  end
-
-  class Capability < ActiveRecord::Base
-    valhammer
-
-    belongs_to :organisation
-  end
-
   context 'with non-nullable columns' do
     it { is_expected.not_to include(a_validator_for(:id, :presence)) }
+    it { is_expected.not_to include(a_validator_for(:created_at, :presence)) }
+    it { is_expected.not_to include(a_validator_for(:updated_at, :presence)) }
     it { is_expected.to include(a_validator_for(:name, :presence)) }
     it { is_expected.to include(a_validator_for(:mail, :presence)) }
     it { is_expected.to include(a_validator_for(:identifier, :presence)) }
     it { is_expected.not_to include(a_validator_for(:description, :presence)) }
     it { is_expected.to include(a_validator_for(:gpa, :presence)) }
+    it { is_expected.not_to include(a_validator_for(:injected, :presence)) }
+  end
+
+  context 'with a non-nullable boolean' do
+    let(:opts) { { in: [false, true], allow_nil: false } }
+
+    it { is_expected.to include(a_validator_for(:injected, :inclusion, opts)) }
+  end
+
+  context 'with a nullable boolean' do
+    subject { Capability.validators }
+    let(:opts) { { in: [false, true], allow_nil: true } }
+
+    it { is_expected.to include(a_validator_for(:core, :inclusion, opts)) }
+  end
+
+  context 'with a non-nullable association' do
+    it { is_expected.to include(a_validator_for(:organisation, :presence)) }
+
+    it 'excludes numericality validator' do
+      expect(subject)
+        .not_to include(a_validator_for(:organisation, :numericality))
+    end
+
+    it 'excludes validators on the foreign key' do
+      expect(subject)
+        .not_to include(a_validator_for(:organisation_id, :presence))
+      expect(subject)
+        .not_to include(a_validator_for(:organisation_id, :numericality))
+    end
+  end
+
+  context 'with a nullable association' do
+    subject { Capability.validators }
+
+    it { is_expected.not_to include(a_validator_for(:organisation, :presence)) }
+
+    it 'excludes validators on the foreign key' do
+      expect(subject)
+        .not_to include(a_validator_for(:organisation_id, :presence))
+      expect(subject)
+        .not_to include(a_validator_for(:organisation_id, :numericality))
+    end
   end
 
   context 'with a unique index' do
@@ -75,12 +101,21 @@ RSpec.describe Valhammer::Validations do
   end
 
   context 'with an integer column' do
-    let(:opts) { { only_integer: true } }
-    it { is_expected.to include(a_validator_for(:age, :numericality, opts)) }
+    context 'with allow_nil' do
+      let(:opts) { { only_integer: true, allow_nil: true } }
+      it { is_expected.to include(a_validator_for(:age, :numericality, opts)) }
+    end
+    context 'without allow_nil' do
+      let(:opts) { { only_integer: true, allow_nil: false } }
+      it 'sets allow_nil to false for socialness' do
+        expect(subject)
+          .to include(a_validator_for(:socialness, :numericality, opts))
+      end
+    end
   end
 
   context 'with a numeric column' do
-    let(:opts) { { only_integer: false } }
+    let(:opts) { { only_integer: false, allow_nil: false } }
     it { is_expected.to include(a_validator_for(:gpa, :numericality, opts)) }
   end
 
@@ -104,6 +139,9 @@ RSpec.describe Valhammer::Validations do
       opts = { disabled_validator => false }
       Class.new(ActiveRecord::Base) do
         self.table_name = 'resources'
+
+        belongs_to :organisation
+
         valhammer(opts)
       end
     end
@@ -119,6 +157,16 @@ RSpec.describe Valhammer::Validations do
           .and not_include(a_validator_for(:mail, :presence))
           .and not_include(a_validator_for(:identifier, :presence))
           .and not_include(a_validator_for(:gpa, :presence))
+          .and not_include(a_validator_for(:organisation, :presence))
+      end
+    end
+
+    context ':inclusion' do
+      let(:disabled_validator) { :inclusion }
+
+      it 'excludes the inclusion validator' do
+        expect(subject)
+          .not_to include(a_validator_for(:injected, :inclusion))
       end
     end
 
@@ -146,6 +194,40 @@ RSpec.describe Valhammer::Validations do
       it 'excludes the length validator' do
         expect(subject).not_to include(a_validator_for(:name, :length))
       end
+    end
+  end
+
+  context 'sanity check' do
+    around do |example|
+      ActiveRecord::Base.transaction do
+        example.run
+        fail(ActiveRecord::Rollback)
+      end
+    end
+
+    let(:organisation) do
+      Organisation.create!(name: 'Enhanced Collaborative Methodologies Pty Ltd',
+                           country: 'Australia', city: 'Brisbane')
+    end
+
+    context Resource do
+      subject do
+        Resource.new(name: 'Orson Orchestrator', identifier: 'orson',
+                     mail: 'orson@synergize.example.com',
+                     description: 'A dedicated but indifferent resource',
+                     gpa: 3.5, injected: false, organisation: organisation)
+      end
+
+      it { is_expected.to be_valid }
+    end
+
+    context Capability do
+      subject do
+        Capability.create!(organisation: organisation, core: true,
+                           name: 'Project Management')
+      end
+
+      it { is_expected.to be_valid }
     end
   end
 end
