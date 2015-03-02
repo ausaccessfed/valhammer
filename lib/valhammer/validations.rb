@@ -1,7 +1,8 @@
 module Valhammer
   module Validations
     VALHAMMER_DEFAULT_OPTS = { presence: true, uniqueness: true,
-                               numericality: true, length: true }.freeze
+                               numericality: true, length: true,
+                               inclusion: true }.freeze
 
     VALHAMMER_EXCLUDED_FIELDS = %w(created_at updated_at)
 
@@ -36,6 +37,7 @@ module Valhammer
 
       validations = {}
       valhammer_presence(validations, column, opts)
+      valhammer_inclusion(validations, column, opts)
       valhammer_unique(validations, column, opts)
       valhammer_numeric(validations, column, opts)
       valhammer_length(validations, column, opts)
@@ -46,9 +48,15 @@ module Valhammer
     end
 
     def valhammer_presence(validations, column, opts)
-      return unless opts[:presence]
+      return unless opts[:presence] && column.type != :boolean
 
       validations[:presence] = true unless column.null
+    end
+
+    def valhammer_inclusion(validations, column, opts)
+      return unless opts[:inclusion] && column.type == :boolean
+
+      validations[:inclusion] = { in: [false, true], allow_nil: column.null }
     end
 
     def valhammer_unique(validations, column, opts)

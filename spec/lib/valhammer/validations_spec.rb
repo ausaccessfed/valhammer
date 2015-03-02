@@ -34,6 +34,20 @@ RSpec.describe Valhammer::Validations do
     it { is_expected.to include(a_validator_for(:identifier, :presence)) }
     it { is_expected.not_to include(a_validator_for(:description, :presence)) }
     it { is_expected.to include(a_validator_for(:gpa, :presence)) }
+    it { is_expected.not_to include(a_validator_for(:injected, :presence)) }
+  end
+
+  context 'with a non-nullable boolean' do
+    let(:opts) { { in: [false, true], allow_nil: false } }
+
+    it { is_expected.to include(a_validator_for(:injected, :inclusion, opts)) }
+  end
+
+  context 'with a nullable boolean' do
+    subject { Capability.validators }
+    let(:opts) { { in: [false, true], allow_nil: true } }
+
+    it { is_expected.to include(a_validator_for(:core, :inclusion, opts)) }
   end
 
   context 'with a non-nullable association' do
@@ -147,6 +161,15 @@ RSpec.describe Valhammer::Validations do
       end
     end
 
+    context ':inclusion' do
+      let(:disabled_validator) { :inclusion }
+
+      it 'excludes the inclusion validator' do
+        expect(subject)
+          .not_to include(a_validator_for(:injected, :inclusion))
+      end
+    end
+
     context ':uniqueness' do
       let(:disabled_validator) { :uniqueness }
 
@@ -171,6 +194,40 @@ RSpec.describe Valhammer::Validations do
       it 'excludes the length validator' do
         expect(subject).not_to include(a_validator_for(:name, :length))
       end
+    end
+  end
+
+  context 'sanity check' do
+    around do |example|
+      ActiveRecord::Base.transaction do
+        example.run
+        fail(ActiveRecord::Rollback)
+      end
+    end
+
+    let(:organisation) do
+      Organisation.create!(name: 'Enhanced Collaborative Methodologies Pty Ltd',
+                           country: 'Australia', city: 'Brisbane')
+    end
+
+    context Resource do
+      subject do
+        Resource.new(name: 'Orson Orchestrator', identifier: 'orson',
+                     mail: 'orson@synergize.example.com',
+                     description: 'A dedicated but indifferent resource',
+                     gpa: 3.5, injected: false, organisation: organisation)
+      end
+
+      it { is_expected.to be_valid }
+    end
+
+    context Capability do
+      subject do
+        Capability.create!(organisation: organisation, core: true,
+                           name: 'Project Management')
+      end
+
+      it { is_expected.to be_valid }
     end
   end
 end

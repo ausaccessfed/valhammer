@@ -74,7 +74,9 @@ end
 
 Generated validations are:
 
-* `:presence` &mdash; added to non-nullable columns
+* `:presence` &mdash; added to non-nullable, non-boolean columns
+* `:inclusion` &mdash; added to boolean columns to emulate the functionality of
+  `presence` which doesn't work correctly for booleans
 * `:uniqueness` &mdash; added to match unique keys
 * `:numericality` &mdash; added to `integer`/`decimal` columns with the
   `only_integer` option set appropriately
