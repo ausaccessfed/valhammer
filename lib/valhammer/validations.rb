@@ -69,7 +69,9 @@ module Valhammer
       return unless unique_keys.one?
 
       scope = unique_keys.first.columns[0..-2]
-      validations[:uniqueness] = scope.empty? ? true : { scope: scope }
+
+      opts = validations[:uniqueness] = { allow_nil: true }
+      opts[:scope] = scope if scope.any?
     end
 
     def valhammer_numeric(validations, column, opts)

@@ -88,7 +88,9 @@ RSpec.describe Valhammer::Validations do
   context 'with a composite unique index' do
     subject { Capability.validators }
 
-    let(:opts) { { scope: ['organisation_id'], case_sensitive: true } }
+    let(:opts) do
+      { scope: ['organisation_id'], case_sensitive: true, allow_nil: true }
+    end
     it { is_expected.to include(a_validator_for(:name, :uniqueness, opts)) }
   end
 
