@@ -80,10 +80,10 @@ module Valhammer
       case column.type
       when :integer
         validations[:numericality] = { only_integer: true,
-                                       allow_nil: column.null }
+                                       allow_nil: true }
       when :decimal
         validations[:numericality] = { only_integer: false,
-                                       allow_nil: column.null }
+                                       allow_nil: true }
       end
     end
 
