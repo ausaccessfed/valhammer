@@ -9,7 +9,7 @@ module Valhammer
     private_constant :VALHAMMER_DEFAULT_OPTS, :VALHAMMER_EXCLUDED_FIELDS
 
     def valhammer(opts = {})
-      @valhammer_indexes ||= connection.indexes(table_name)
+      @valhammer_indexes = connection.indexes(table_name)
       opts = VALHAMMER_DEFAULT_OPTS.merge(opts)
       columns_hash.each do |name, column|
         valhammer_validate(name, column, opts)
@@ -56,7 +56,7 @@ module Valhammer
     def valhammer_inclusion(validations, column, opts)
       return unless opts[:inclusion] && column.type == :boolean
 
-      validations[:inclusion] = { in: [false, true], allow_nil: column.null }
+      validations[:inclusion] = { in: [false, true], allow_nil: true }
     end
 
     def valhammer_unique(validations, column, opts)
@@ -69,7 +69,9 @@ module Valhammer
       return unless unique_keys.one?
 
       scope = unique_keys.first.columns[0..-2]
-      validations[:uniqueness] = scope.empty? ? true : { scope: scope }
+
+      opts = validations[:uniqueness] = { allow_nil: true }
+      opts[:scope] = scope if scope.any?
     end
 
     def valhammer_numeric(validations, column, opts)
@@ -78,10 +80,10 @@ module Valhammer
       case column.type
       when :integer
         validations[:numericality] = { only_integer: true,
-                                       allow_nil: column.null }
+                                       allow_nil: true }
       when :decimal
         validations[:numericality] = { only_integer: false,
-                                       allow_nil: column.null }
+                                       allow_nil: true }
       end
     end
 

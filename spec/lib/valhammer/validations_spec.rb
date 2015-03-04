@@ -38,7 +38,7 @@ RSpec.describe Valhammer::Validations do
   end
 
   context 'with a non-nullable boolean' do
-    let(:opts) { { in: [false, true], allow_nil: false } }
+    let(:opts) { { in: [false, true], allow_nil: true } }
 
     it { is_expected.to include(a_validator_for(:injected, :inclusion, opts)) }
   end
@@ -88,7 +88,9 @@ RSpec.describe Valhammer::Validations do
   context 'with a composite unique index' do
     subject { Capability.validators }
 
-    let(:opts) { { scope: ['organisation_id'], case_sensitive: true } }
+    let(:opts) do
+      { scope: ['organisation_id'], case_sensitive: true, allow_nil: true }
+    end
     it { is_expected.to include(a_validator_for(:name, :uniqueness, opts)) }
   end
 
@@ -101,13 +103,14 @@ RSpec.describe Valhammer::Validations do
   end
 
   context 'with an integer column' do
-    context 'with allow_nil' do
+    context 'with a nullable column' do
       let(:opts) { { only_integer: true, allow_nil: true } }
       it { is_expected.to include(a_validator_for(:age, :numericality, opts)) }
     end
-    context 'without allow_nil' do
-      let(:opts) { { only_integer: true, allow_nil: false } }
-      it 'sets allow_nil to false for socialness' do
+
+    context 'with a non-nullable column' do
+      let(:opts) { { only_integer: true, allow_nil: true } }
+      it 'allows a nil value in the numericality validator' do
         expect(subject)
           .to include(a_validator_for(:socialness, :numericality, opts))
       end
@@ -115,7 +118,7 @@ RSpec.describe Valhammer::Validations do
   end
 
   context 'with a numeric column' do
-    let(:opts) { { only_integer: false, allow_nil: false } }
+    let(:opts) { { only_integer: false, allow_nil: true } }
     it { is_expected.to include(a_validator_for(:gpa, :numericality, opts)) }
   end
 
