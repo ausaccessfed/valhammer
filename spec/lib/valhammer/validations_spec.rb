@@ -38,7 +38,7 @@ RSpec.describe Valhammer::Validations do
   end
 
   context 'with a non-nullable boolean' do
-    let(:opts) { { in: [false, true], allow_nil: false } }
+    let(:opts) { { in: [false, true], allow_nil: true } }
 
     it { is_expected.to include(a_validator_for(:injected, :inclusion, opts)) }
   end
