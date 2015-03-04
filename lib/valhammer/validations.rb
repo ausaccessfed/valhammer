@@ -9,7 +9,7 @@ module Valhammer
     private_constant :VALHAMMER_DEFAULT_OPTS, :VALHAMMER_EXCLUDED_FIELDS
 
     def valhammer(opts = {})
-      @valhammer_indexes ||= connection.indexes(table_name)
+      @valhammer_indexes = connection.indexes(table_name)
       opts = VALHAMMER_DEFAULT_OPTS.merge(opts)
       columns_hash.each do |name, column|
         valhammer_validate(name, column, opts)
