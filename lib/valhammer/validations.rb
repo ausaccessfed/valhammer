@@ -56,7 +56,7 @@ module Valhammer
     def valhammer_inclusion(validations, column, opts)
       return unless opts[:inclusion] && column.type == :boolean
 
-      validations[:inclusion] = { in: [false, true], allow_nil: true }
+      validations[:inclusion] = { in: [false, true], allow_nil: column.null }
     end
 
     def valhammer_unique(validations, column, opts)
