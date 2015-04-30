@@ -115,6 +115,10 @@ RSpec.describe Valhammer::Validations do
           .to include(a_validator_for(:socialness, :numericality, opts))
       end
     end
+
+    context 'when used as enum' do
+      it { is_expected.not_to include(a_validator_for(:sex, :numericality)) }
+    end
   end
 
   context 'with a numeric column' do

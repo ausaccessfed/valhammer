@@ -77,6 +77,8 @@ module Valhammer
     def valhammer_numeric(validations, column, opts)
       return unless opts[:numericality]
 
+      return if defined_enums.key?(column.name)
+
       case column.type
       when :integer
         validations[:numericality] = { only_integer: true,
