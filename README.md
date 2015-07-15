@@ -4,19 +4,18 @@
 [![Build Status][BS img]][Build Status]
 [![Dependency Status][DS img]][Dependency Status]
 [![Code Climate][CC img]][Code Climate]
-[![Coverage Status][CS img]][Coverage Status]
+[![Coverage Status][CS img]][Code Climate]
 
 [Gem Version]: https://rubygems.org/gems/valhammer
-[Build Status]: https://travis-ci.org/ausaccessfed/valhammer
+[Build Status]: https://codeship.com/projects/91215
 [Dependency Status]: https://gemnasium.com/ausaccessfed/valhammer
 [Code Climate]: https://codeclimate.com/github/ausaccessfed/valhammer
-[Coverage Status]: https://coveralls.io/r/ausaccessfed/valhammer
 
 [GV img]: https://img.shields.io/gem/v/valhammer.svg
-[BS img]: https://img.shields.io/travis/ausaccessfed/valhammer/develop.svg
-[DS img]: https://img.shields.io/gemnasium/ausaccessfed/valhammer.svg
+[BS img]: https://img.shields.io/codeship/eb0d3cd0-0cd1-0133-3c85-7aae0ba3591b/develop.svg
+[DS img]: https://img.shields.io/gemnasium/ausaccessfed/valhammer/develop.svg
 [CC img]: https://img.shields.io/codeclimate/github/ausaccessfed/valhammer.svg
-[CS img]: https://img.shields.io/coveralls/ausaccessfed/valhammer.svg
+[CS img]: https://img.shields.io/codeclimate/coverage/github/ausaccessfed/valhammer.svg
 
 Automatically validate ActiveRecord models based on the database schema.
 
