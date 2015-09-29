@@ -13,7 +13,7 @@
 
 [GV img]: https://img.shields.io/gem/v/valhammer.svg
 [BS img]: https://img.shields.io/codeship/eb0d3cd0-0cd1-0133-3c85-7aae0ba3591b/develop.svg
-[DS img]: https://img.shields.io/gemnasium/ausaccessfed/valhammer/develop.svg
+[DS img]: https://img.shields.io/gemnasium/ausaccessfed/valhammer.svg
 [CC img]: https://img.shields.io/codeclimate/github/ausaccessfed/valhammer.svg
 [CS img]: https://img.shields.io/codeclimate/coverage/github/ausaccessfed/valhammer.svg
 
