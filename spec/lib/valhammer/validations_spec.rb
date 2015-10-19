@@ -117,11 +117,15 @@ RSpec.describe Valhammer::Validations do
       o = Organisation.create!(country: 'Australia', city: 'Brisbane',
                                name: 'Test Organisation')
 
-      attrs = { organisation_id: o.id, name: 'Software Development' }
+      attrs = { organisation_id: o.id, name: 'Software Development',
+                identifier: SecureRandom.urlsafe_base64 }
 
       Capability.create!(attrs)
+
+      attrs[:identifier] = SecureRandom.urlsafe_base64
       Capability.create!(attrs.merge(organisation_id: nil))
 
+      attrs[:identifier] = SecureRandom.urlsafe_base64
       expect(Capability.new(attrs.merge(organisation_id: nil))).to be_valid
       expect(Capability.new(attrs)).not_to be_valid
     end
@@ -257,7 +261,7 @@ RSpec.describe Valhammer::Validations do
     context Capability do
       subject do
         Capability.create!(organisation: organisation, core: true,
-                           name: 'Project Management')
+                           name: 'Project Management', identifier: 'pm')
       end
 
       it { is_expected.to be_valid }

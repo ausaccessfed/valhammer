@@ -22,11 +22,13 @@ ActiveRecord::Schema.define(version: 0) do
     t.belongs_to :organisation, null: true, default: nil
 
     t.string :name, null: false, default: nil
+    t.string :identifier, null: false, default: nil
     t.boolean :core, null: true, default: nil
 
     t.timestamps null: false
 
     t.index [:organisation_id, :name], unique: true
+    t.index :identifier, unique: true, where: 'organisation_id IS NULL'
   end
 
   create_table :organisations, force: true do |t|
