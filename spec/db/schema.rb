@@ -15,6 +15,7 @@ ActiveRecord::Schema.define(version: 0) do
     t.timestamps null: false
 
     t.index :identifier, unique: true
+    t.index [:organisation_id, :name], unique: true
   end
 
   create_table :capabilities, force: true do |t|
