@@ -216,6 +216,24 @@ anyway, if it means your association queries benefit from the index).
 
 Alternatively, apply the validation yourself using ActiveRecord.
 
+## Partial Unique Keys
+
+When a unique key is partially applied to a relation, that key will not be given
+a uniqueness validation.
+
+```ruby
+create_table(:widgets) do |t|
+  t.string :supplier_code, null: true, default: nil
+  t.string :item_code, null: true, default: nil
+
+  t.index [:supplier_code, :item_code], unique: true,
+                                        where: 'item_code LIKE "a%"'
+end
+```
+
+In this case, it is not possible for valhammer to determine the behaviour of the
+`where` clause, so the validation must be manually created.
+
 ## Contributing
 
 Refer to [GitHub Flow](https://guides.github.com/introduction/flow/) for
