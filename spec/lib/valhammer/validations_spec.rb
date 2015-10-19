@@ -95,6 +95,12 @@ RSpec.describe Valhammer::Validations do
     it { is_expected.not_to include(a_validator_for(:mail, :uniqueness)) }
   end
 
+  context 'with a partial unique index' do
+    subject { Capability.validators }
+
+    it { is_expected.not_to include(a_validator_for(:identifier, :uniqueness)) }
+  end
+
   context 'with a composite unique index' do
     let(:opts) do
       { scope: ['organisation_id'], case_sensitive: true, allow_nil: true }
