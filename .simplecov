@@ -1,9 +1,5 @@
-require 'coveralls'
-
-SimpleCov.formatter = SimpleCov::Formatter::MultiFormatter[
-  SimpleCov::Formatter::HTMLFormatter,
-  Coveralls::SimpleCov::Formatter
-]
+require 'codeclimate-test-reporter'
+CodeClimate::TestReporter.start
 
 SimpleCov.start do
   add_filter('spec')

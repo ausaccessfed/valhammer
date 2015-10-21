@@ -1,4 +1,11 @@
 RSpec.describe Valhammer::Validations do
+  around do |example|
+    ActiveRecord::Base.transaction do
+      example.run
+      fail(ActiveRecord::Rollback)
+    end
+  end
+
   def validation_impl(kind)
     name = "#{kind.to_s.camelize}Validator"
 
@@ -10,8 +17,11 @@ RSpec.describe Valhammer::Validations do
   end
 
   RSpec::Matchers.define :a_validator_for do |field, kind, opts = nil|
+    include RSpec::Matchers::Composable
+
     match do |v|
-      v.is_a?(validation_impl(kind)) && (opts.nil? || v.options == opts) &&
+      v.is_a?(validation_impl(kind)) &&
+        (opts.nil? || values_match?(opts, v.options)) &&
         v.attributes.map(&:to_s) == [field.to_s]
     end
 
@@ -85,13 +95,46 @@ RSpec.describe Valhammer::Validations do
     it { is_expected.not_to include(a_validator_for(:mail, :uniqueness)) }
   end
 
-  context 'with a composite unique index' do
+  context 'with a partial unique index' do
     subject { Capability.validators }
 
+    it { is_expected.not_to include(a_validator_for(:identifier, :uniqueness)) }
+  end
+
+  context 'with a composite unique index' do
     let(:opts) do
       { scope: ['organisation_id'], case_sensitive: true, allow_nil: true }
     end
+
     it { is_expected.to include(a_validator_for(:name, :uniqueness, opts)) }
+  end
+
+  context 'with a composite unique index with nullable scope column' do
+    subject { Capability.validators }
+
+    let(:opts) do
+      { scope: ['organisation_id'], case_sensitive: true, allow_nil: true,
+        if: an_instance_of(Proc) }
+    end
+
+    it { is_expected.to include(a_validator_for(:name, :uniqueness, opts)) }
+
+    it 'skips validation when the nullable scope column is null' do
+      o = Organisation.create!(country: 'Australia', city: 'Brisbane',
+                               name: 'Test Organisation')
+
+      attrs = { organisation_id: o.id, name: 'Software Development',
+                identifier: SecureRandom.urlsafe_base64 }
+
+      Capability.create!(attrs)
+
+      attrs[:identifier] = SecureRandom.urlsafe_base64
+      Capability.create!(attrs.merge(organisation_id: nil))
+
+      attrs[:identifier] = SecureRandom.urlsafe_base64
+      expect(Capability.new(attrs.merge(organisation_id: nil))).to be_valid
+      expect(Capability.new(attrs)).not_to be_valid
+    end
   end
 
   context 'with duplicate unique indexes' do
@@ -205,13 +248,6 @@ RSpec.describe Valhammer::Validations do
   end
 
   context 'sanity check' do
-    around do |example|
-      ActiveRecord::Base.transaction do
-        example.run
-        fail(ActiveRecord::Rollback)
-      end
-    end
-
     let(:organisation) do
       Organisation.create!(name: 'Enhanced Collaborative Methodologies Pty Ltd',
                            country: 'Australia', city: 'Brisbane')
@@ -231,7 +267,7 @@ RSpec.describe Valhammer::Validations do
     context Capability do
       subject do
         Capability.create!(organisation: organisation, core: true,
-                           name: 'Project Management')
+                           name: 'Project Management', identifier: 'pm')
       end
 
       it { is_expected.to be_valid }
