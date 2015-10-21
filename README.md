@@ -118,6 +118,39 @@ end
 That is, the last column in the key is the field which gets validated, and the
 other columns form the `scope` argument.
 
+If any of the scope columns are nullable, the validation will be conditional on
+the presence of the scope values. This avoids the situation where your
+underlying database would accept a row (because it considers `NULL` values not
+equal to each other, which is true of [SQLite][sqlite-null-index],
+[PostgreSQL][postgres-null-index] and [MySQL/MariaDB][mysql-null-index] at the
+least.)
+
+If the above example table had nullable columns, for example:
+
+```ruby
+create_table(:widgets) do |t|
+  t.string :supplier_code, null: true, default: nil
+  t.string :item_code, null: true, default: nil
+
+  t.index [:supplier_code, :item_code], unique: true
+end
+```
+
+This amended table structure causes Valhammer to create validations as though
+you had written:
+
+```ruby
+class Widget < ActiveRecord::Base
+  validates :item_code, uniqueness: { scope: :supplier_code,
+                                      if: -> { supplier_code },
+                                      allow_nil: true }
+end
+```
+
+[sqlite-null-index]: https://www.sqlite.org/lang_createindex.html
+[postgres-null-index]: http://www.postgresql.org/docs/9.0/static/indexes-unique.html
+[mysql-null-index]: https://dev.mysql.com/doc/refman/5.0/en/create-index.html
+
 ## Duplicate Unique Keys
 
 Valhammer is able to handle the simple case when multiple unique keys reference
@@ -182,6 +215,24 @@ To work around this, put associations first in your unique keys (often a
 anyway, if it means your association queries benefit from the index).
 
 Alternatively, apply the validation yourself using ActiveRecord.
+
+## Partial Unique Keys
+
+When a unique key is partially applied to a relation, that key will not be given
+a uniqueness validation.
+
+```ruby
+create_table(:widgets) do |t|
+  t.string :supplier_code, null: true, default: nil
+  t.string :item_code, null: true, default: nil
+
+  t.index [:supplier_code, :item_code], unique: true,
+                                        where: 'item_code LIKE "a%"'
+end
+```
+
+In this case, it is not possible for valhammer to determine the behaviour of the
+`where` clause, so the validation must be manually created.
 
 ## Contributing
 

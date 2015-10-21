@@ -62,16 +62,21 @@ module Valhammer
     def valhammer_unique(validations, column, opts)
       return unless opts[:uniqueness]
 
-      unique_keys = @valhammer_indexes.select do |i|
-        i.unique && i.columns.last == column.name
-      end
-
+      unique_keys = valhammer_unique_keys(column)
       return unless unique_keys.one?
 
       scope = unique_keys.first.columns[0..-2]
 
-      opts = validations[:uniqueness] = { allow_nil: true }
+      validations[:uniqueness] = valhammer_unique_opts(scope)
+    end
+
+    def valhammer_unique_opts(scope)
+      nullable = scope.select { |c| columns_hash[c].null }
+
+      opts = { allow_nil: true }
       opts[:scope] = scope if scope.any?
+      opts[:if] = -> { nullable.all? { |c| send(c) } } if nullable.any?
+      opts
     end
 
     def valhammer_numeric(validations, column, opts)
@@ -106,6 +111,12 @@ module Valhammer
 
     def valhammer_exclude?(field)
       field == primary_key || VALHAMMER_EXCLUDED_FIELDS.include?(field)
+    end
+
+    def valhammer_unique_keys(column)
+      @valhammer_indexes.select do |i|
+        i.unique && !i.where && i.columns.last == column.name
+      end
     end
 
     def valhammer_assoc_name(field)
