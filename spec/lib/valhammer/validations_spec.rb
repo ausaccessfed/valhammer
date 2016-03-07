@@ -2,7 +2,7 @@ RSpec.describe Valhammer::Validations do
   around do |example|
     ActiveRecord::Base.transaction do
       example.run
-      fail(ActiveRecord::Rollback)
+      raise(ActiveRecord::Rollback)
     end
   end
 
