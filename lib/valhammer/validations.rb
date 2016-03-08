@@ -4,7 +4,7 @@ module Valhammer
                                numericality: true, length: true,
                                inclusion: true }.freeze
 
-    VALHAMMER_EXCLUDED_FIELDS = %w(created_at updated_at)
+    VALHAMMER_EXCLUDED_FIELDS = %w(created_at updated_at).freeze
 
     private_constant :VALHAMMER_DEFAULT_OPTS, :VALHAMMER_EXCLUDED_FIELDS
 
