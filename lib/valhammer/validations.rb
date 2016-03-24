@@ -74,7 +74,7 @@ module Valhammer
       nullable = scope.select { |c| columns_hash[c].null }
 
       opts = { allow_nil: true }
-      opts[:scope] = scope if scope.any?
+      opts[:scope] = scope.map(&:to_sym) if scope.any?
       opts[:if] = -> { nullable.all? { |c| send(c) } } if nullable.any?
       opts
     end
