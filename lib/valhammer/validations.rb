@@ -4,7 +4,7 @@ module Valhammer
                                numericality: true, length: true,
                                inclusion: true }.freeze
 
-    VALHAMMER_EXCLUDED_FIELDS = %w(created_at updated_at)
+    VALHAMMER_EXCLUDED_FIELDS = %w(created_at updated_at).freeze
 
     private_constant :VALHAMMER_DEFAULT_OPTS, :VALHAMMER_EXCLUDED_FIELDS
 
@@ -74,7 +74,7 @@ module Valhammer
       nullable = scope.select { |c| columns_hash[c].null }
 
       opts = { allow_nil: true }
-      opts[:scope] = scope if scope.any?
+      opts[:scope] = scope.map(&:to_sym) if scope.any?
       opts[:if] = -> { nullable.all? { |c| send(c) } } if nullable.any?
       opts
     end

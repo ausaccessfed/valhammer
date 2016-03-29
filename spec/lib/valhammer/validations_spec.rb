@@ -2,7 +2,7 @@ RSpec.describe Valhammer::Validations do
   around do |example|
     ActiveRecord::Base.transaction do
       example.run
-      fail(ActiveRecord::Rollback)
+      raise(ActiveRecord::Rollback)
     end
   end
 
@@ -93,6 +93,13 @@ RSpec.describe Valhammer::Validations do
     it { is_expected.not_to include(a_validator_for(:id, :uniqueness)) }
     it { is_expected.to include(a_validator_for(:identifier, :uniqueness)) }
     it { is_expected.not_to include(a_validator_for(:mail, :uniqueness)) }
+
+    it 'creates a case sensitive validator' do
+      opts = { case_sensitive: true, allow_nil: true }
+
+      expect(subject)
+        .to include(a_validator_for(:identifier, :uniqueness, opts))
+    end
   end
 
   context 'with a partial unique index' do
@@ -103,7 +110,7 @@ RSpec.describe Valhammer::Validations do
 
   context 'with a composite unique index' do
     let(:opts) do
-      { scope: ['organisation_id'], case_sensitive: true, allow_nil: true }
+      { scope: [:organisation_id], case_sensitive: true, allow_nil: true }
     end
 
     it { is_expected.to include(a_validator_for(:name, :uniqueness, opts)) }
@@ -113,7 +120,7 @@ RSpec.describe Valhammer::Validations do
     subject { Capability.validators }
 
     let(:opts) do
-      { scope: ['organisation_id'], case_sensitive: true, allow_nil: true,
+      { scope: [:organisation_id], case_sensitive: true, allow_nil: true,
         if: an_instance_of(Proc) }
     end
 
