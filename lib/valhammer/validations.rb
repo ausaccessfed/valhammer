@@ -1,67 +1,60 @@
 module Valhammer
   module Validations
-    VALHAMMER_DEFAULT_OPTS = { presence: true, uniqueness: true,
-                               numericality: true, length: true,
-                               inclusion: true }.freeze
-
     VALHAMMER_EXCLUDED_FIELDS = %w(created_at updated_at).freeze
 
-    private_constant :VALHAMMER_DEFAULT_OPTS, :VALHAMMER_EXCLUDED_FIELDS
+    private_constant :VALHAMMER_EXCLUDED_FIELDS
 
-    def valhammer(opts = {})
+    def valhammer
       @valhammer_indexes = connection.indexes(table_name)
-      opts = VALHAMMER_DEFAULT_OPTS.merge(opts)
       columns_hash.each do |name, column|
-        valhammer_validate(name, column, opts)
+        valhammer_validate(name, column)
       end
     end
 
     private
 
-    def valhammer_validate(name, column, opts)
+    def valhammer_validate(name, column)
       return if valhammer_exclude?(name)
 
       assoc_name = valhammer_assoc_name(name)
       if assoc_name.nil?
-        validations = valhammer_validations(column, opts)
+        validations = valhammer_validations(column)
         validates(name, validations) unless validations.empty?
         return
       end
 
-      return if column.null || !opts[:presence]
+      return if column.null
       validates(assoc_name, presence: true)
     end
 
-    def valhammer_validations(column, opts)
+    def valhammer_validations(column)
       logger.debug("Valhammer generating options for #{valhammer_info(column)}")
 
       validations = {}
-      valhammer_presence(validations, column, opts)
-      valhammer_inclusion(validations, column, opts)
-      valhammer_unique(validations, column, opts)
-      valhammer_numeric(validations, column, opts)
-      valhammer_length(validations, column, opts)
+      valhammer_presence(validations, column)
+      valhammer_inclusion(validations, column)
+      valhammer_unique(validations, column)
+      valhammer_numeric(validations, column)
+      valhammer_length(validations, column)
 
       logger.debug("Valhammer options for #{valhammer_log_key(column)} " \
                    "are: #{validations.inspect}")
       validations
     end
 
-    def valhammer_presence(validations, column, opts)
-      return unless opts[:presence] && column.type != :boolean
+    def valhammer_presence(validations, column)
+      return unless column.type != :boolean
 
       validations[:presence] = true unless column.null
     end
 
-    def valhammer_inclusion(validations, column, opts)
-      return unless opts[:inclusion] && column.type == :boolean
+    def valhammer_inclusion(validations, column)
+      return unless column.type == :boolean
 
       validations[:inclusion] = { in: [false, true], allow_nil: column.null }
     end
 
-    def valhammer_unique(validations, column, opts)
-      return unless opts[:uniqueness]
-
+    def valhammer_unique(validations, column)
       unique_keys = valhammer_unique_keys(column)
       return unless unique_keys.one?
 
@@ -79,9 +72,7 @@ module Valhammer
       opts
     end
 
-    def valhammer_numeric(validations, column, opts)
-      return unless opts[:numericality]
-
+    def valhammer_numeric(validations, column)
       return if defined_enums.key?(column.name)
 
       case column.type
@@ -94,9 +85,8 @@ module Valhammer
       end
     end
 
-    def valhammer_length(validations, column, opts)
-      return unless opts[:length] && column.type == :string && column.limit
-
+    def valhammer_length(validations, column)
+      return unless column.type == :string && column.limit
       validations[:length] = { maximum: column.limit }
     end
 
