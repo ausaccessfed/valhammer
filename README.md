@@ -82,16 +82,6 @@ Generated validations are:
 * `:length` &mdash; added to `string` columns to ensure the value fits in the
   column
 
-To disable a kind of validation, pass an option to the `valhammer` method:
-
-```ruby
-class Widget < ActiveRecord::Base
-  belongs_to :supplier
-
-  valhammer uniqueness: false
-end
-```
-
 ## Composite Unique Keys
 
 When Valhammer encounters a composite unique key, it inspects the columns
