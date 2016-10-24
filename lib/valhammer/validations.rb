@@ -1,24 +1,50 @@
 module Valhammer
   module Validations
+    class DisabledFieldConfig
+      def self.perform(&bl)
+        new.tap { |obj| obj.instance_eval(&bl) if block_given? }.to_opts
+      end
+
+      def initialize
+        @disabled_validations = {}
+      end
+
+      def disable(opts)
+        opts.each do |k, v|
+          @disabled_validations[k] ||= []
+          @disabled_validations[k] += Array(v)
+        end
+      end
+
+      def to_opts
+        @disabled_validations.stringify_keys.transform_values do |v|
+          Hash[v.zip(Array.new(v.length, false))]
+        end
+      end
+    end
+
     VALHAMMER_EXCLUDED_FIELDS = %w(created_at updated_at).freeze
 
-    private_constant :VALHAMMER_EXCLUDED_FIELDS
+    private_constant :VALHAMMER_EXCLUDED_FIELDS, :DisabledFieldConfig
 
-    def valhammer
+    def valhammer(&bl)
       @valhammer_indexes = connection.indexes(table_name)
+      config = DisabledFieldConfig.perform(&bl)
+
       columns_hash.each do |name, column|
-        valhammer_validate(name, column)
+        opts = Hash.new(true).merge(config[name] || {})
+        valhammer_validate(name, column, opts)
       end
     end
 
     private
 
-    def valhammer_validate(name, column)
+    def valhammer_validate(name, column, opts)
       return if valhammer_exclude?(name)
 
       assoc_name = valhammer_assoc_name(name)
       if assoc_name.nil?
-        validations = valhammer_validations(column)
+        validations = valhammer_validations(column, opts)
         validates(name, validations) unless validations.empty?
         return
       end
@@ -27,39 +53,40 @@ module Valhammer
       validates(assoc_name, presence: true)
     end
 
-    def valhammer_validations(column)
+    def valhammer_validations(column, opts)
       logger.debug("Valhammer generating options for #{valhammer_info(column)}")
 
       validations = {}
-      valhammer_presence(validations, column)
-      valhammer_inclusion(validations, column)
-      valhammer_unique(validations, column)
-      valhammer_numeric(validations, column)
-      valhammer_length(validations, column)
+      valhammer_presence(validations, column, opts)
+      valhammer_inclusion(validations, column, opts)
+      valhammer_unique(validations, column, opts)
+      valhammer_numeric(validations, column, opts)
+      valhammer_length(validations, column, opts)
 
       logger.debug("Valhammer options for #{valhammer_log_key(column)} " \
                    "are: #{validations.inspect}")
       validations
     end
 
-    def valhammer_presence(validations, column)
-      return unless column.type != :boolean
+    def valhammer_presence(validations, column, opts)
+      return unless opts[:presence] && column.type != :boolean
 
       validations[:presence] = true unless column.null
     end
 
-    def valhammer_inclusion(validations, column)
-      return unless column.type == :boolean
+    def valhammer_inclusion(validations, column, opts)
+      return unless opts[:inclusion] && column.type == :boolean
 
       validations[:inclusion] = { in: [false, true], allow_nil: column.null }
     end
 
-    def valhammer_unique(validations, column)
+    def valhammer_unique(validations, column, opts)
+      return unless opts[:uniqueness]
+
       unique_keys = valhammer_unique_keys(column)
       return unless unique_keys.one?
 
       scope = unique_keys.first.columns[0..-2]
-
       validations[:uniqueness] = valhammer_unique_opts(scope)
     end
 
@@ -72,8 +99,8 @@ module Valhammer
       opts
     end
 
-    def valhammer_numeric(validations, column)
-      return if defined_enums.key?(column.name)
+    def valhammer_numeric(validations, column, opts)
+      return if !opts[:numericality] || defined_enums.key?(column.name)
 
       case column.type
       when :integer
@@ -85,8 +112,8 @@ module Valhammer
       end
     end
 
-    def valhammer_length(validations, column)
-      return unless column.type == :string && column.limit
+    def valhammer_length(validations, column, opts)
+      return unless opts[:length] && column.type == :string && column.limit
       validations[:length] = { maximum: column.limit }
     end
 
