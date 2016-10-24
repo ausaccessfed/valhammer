@@ -224,6 +224,15 @@ RSpec.describe Valhammer::Validations do
       end
     end
 
+    context 'disabling a presence validator for an association' do
+      let(:disable_opts) { { organisation: :presence } }
+
+      it 'excludes the disabled validator' do
+        expect(subject)
+          .not_to include(a_validator_for(:organisation, :presence))
+      end
+    end
+
     context 'disabling an inclusion validator' do
       let(:disable_opts) { { injected: :inclusion } }
 

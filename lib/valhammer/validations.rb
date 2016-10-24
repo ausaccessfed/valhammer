@@ -36,25 +36,31 @@ module Valhammer
       config = DisabledFieldConfig.perform(&bl)
 
       columns_hash.each do |name, column|
-        opts = Hash.new(true).merge(config[name] || {})
-        valhammer_validate(name, column, opts)
+        valhammer_validate(name, column, config)
       end
     end
 
     private
 
-    def valhammer_validate(name, column, opts)
+    def valhammer_validate(name, column, config)
       return if valhammer_exclude?(name)
 
       assoc_name = valhammer_assoc_name(name)
-      if assoc_name.nil?
-        validations = valhammer_validations(column, opts)
-        validates(name, validations) unless validations.empty?
-        return
-      end
+      return valhammer_validate_assoc(assoc_name, column, config) if assoc_name
 
-      return if column.null
+      opts = valhammer_field_config(config, name)
+      validations = valhammer_validations(column, opts)
+      validates(name, validations) unless validations.empty?
+    end
+
+    def valhammer_validate_assoc(assoc_name, column, config)
+      opts = valhammer_field_config(config, assoc_name)
+      return if column.null || !opts[:presence]
       validates(assoc_name, presence: true)
+    end
+
+    def valhammer_field_config(config, field)
+      Hash.new(true).merge(config[field.to_s] || {})
     end
 
     def valhammer_validations(column, opts)
