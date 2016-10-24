@@ -197,6 +197,16 @@ RSpec.describe Valhammer::Validations do
 
     subject { klass.validators }
 
+    context 'disabling an attribute' do
+      let(:disable_opts) { :name }
+
+      it 'excludes all validators for the field' do
+        [:presence, :length, :uniqueness].each do |v|
+          expect(subject).not_to include(a_validator_for(:name, v))
+        end
+      end
+    end
+
     context 'disabling a presence validator' do
       let(:disable_opts) { { name: :presence } }
 

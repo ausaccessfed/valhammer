@@ -9,7 +9,11 @@ module Valhammer
         @disabled_validations = {}
       end
 
+      ALL = %i(presence uniqueness inclusion length numericality).freeze
+
       def disable(opts)
+        opts = { opts => ALL } if opts.is_a?(Symbol)
+
         opts.each do |k, v|
           @disabled_validations[k] ||= []
           @disabled_validations[k] += Array(v)
