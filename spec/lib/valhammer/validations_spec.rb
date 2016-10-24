@@ -180,76 +180,113 @@ RSpec.describe Valhammer::Validations do
     it { is_expected.to include(a_validator_for(:name, :length, maximum: 100)) }
   end
 
-  context 'with disabled validations' do
-    around do |example|
-      old = ActiveRecord::Base.logger
-
-      begin
-        ActiveRecord::Base.logger = Logger.new('/dev/null')
-        example.run
-      ensure
-        ActiveRecord::Base.logger = old
-      end
-    end
-
+  context 'when passing a block' do
     let(:klass) do
-      opts = { disabled_validator => false }
+      opts = disable_opts
+
       Class.new(ActiveRecord::Base) do
         self.table_name = 'resources'
 
         belongs_to :organisation
 
-        valhammer(opts)
+        valhammer do
+          disable opts
+        end
       end
     end
 
     subject { klass.validators }
 
-    context ':presence' do
-      let(:disabled_validator) { :presence }
+    context 'disabling an attribute' do
+      let(:disable_opts) { :name }
 
-      it 'excludes the presence validator' do
-        expect(subject)
-          .to not_include(a_validator_for(:name, :presence))
-          .and not_include(a_validator_for(:mail, :presence))
-          .and not_include(a_validator_for(:identifier, :presence))
-          .and not_include(a_validator_for(:gpa, :presence))
-          .and not_include(a_validator_for(:organisation, :presence))
+      it 'excludes all validators for the field' do
+        [:presence, :length, :uniqueness].each do |v|
+          expect(subject).not_to include(a_validator_for(:name, v))
+        end
       end
     end
 
-    context ':inclusion' do
-      let(:disabled_validator) { :inclusion }
+    context 'disabling a presence validator' do
+      let(:disable_opts) { { name: :presence } }
 
-      it 'excludes the inclusion validator' do
+      it 'excludes the disabled validator' do
+        expect(subject).not_to include(a_validator_for(:name, :presence))
+      end
+
+      it 'includes other validators of the same type' do
+        expect(subject).to include(a_validator_for(:mail, :presence))
+      end
+
+      it 'includes other validators for the same field' do
         expect(subject)
-          .not_to include(a_validator_for(:injected, :inclusion))
+          .to include(a_validator_for(:name, :length, maximum: 100))
       end
     end
 
-    context ':uniqueness' do
-      let(:disabled_validator) { :uniqueness }
+    context 'disabling a presence validator for an association' do
+      let(:disable_opts) { { organisation: :presence } }
 
-      it 'excludes the uniqueness validator' do
+      it 'excludes the disabled validator' do
+        expect(subject)
+          .not_to include(a_validator_for(:organisation, :presence))
+      end
+    end
+
+    context 'disabling an inclusion validator' do
+      let(:disable_opts) { { injected: :inclusion } }
+
+      it 'excludes the disabled validator' do
+        expect(subject).not_to include(a_validator_for(:injected, :inclusion))
+      end
+    end
+
+    context 'disabling a uniqueness validator' do
+      let(:disable_opts) { { identifier: :uniqueness } }
+
+      it 'excludes the disabled validator' do
         expect(subject)
           .not_to include(a_validator_for(:identifier, :uniqueness))
       end
-    end
 
-    context ':numericality' do
-      let(:disabled_validator) { :numericality }
+      it 'includes other validators of the same type' do
+        expect(subject).to include(a_validator_for(:name, :uniqueness))
+      end
 
-      it 'excludes the numericality validator' do
-        expect(subject).to not_include(a_validator_for(:age, :numericality))
-          .and not_include(a_validator_for(:gpa, :numericality))
+      it 'includes other validators for the same field' do
+        expect(subject).to include(a_validator_for(:identifier, :presence))
       end
     end
 
-    context ':length' do
-      let(:disabled_validator) { :length }
+    context 'disabling a numericality validator' do
+      let(:disable_opts) { { gpa: :numericality } }
 
-      it 'excludes the length validator' do
+      it 'excludes the disabled validator' do
+        expect(subject).not_to include(a_validator_for(:gpa, :numericality))
+      end
+
+      it 'includes other validators of the same type' do
+        expect(subject).to include(a_validator_for(:age, :numericality))
+      end
+
+      it 'includes other validators for the same field' do
+        expect(subject).to include(a_validator_for(:gpa, :presence))
+      end
+    end
+
+    context 'disabling a length validator' do
+      let(:disable_opts) { { name: :length } }
+
+      it 'excludes the disabled validator' do
         expect(subject).not_to include(a_validator_for(:name, :length))
+      end
+
+      it 'includes other validators of the same type' do
+        expect(subject).to include(a_validator_for(:identifier, :length))
+      end
+
+      it 'includes other validators for the same field' do
+        expect(subject).to include(a_validator_for(:name, :presence))
       end
     end
   end
