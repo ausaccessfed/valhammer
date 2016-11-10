@@ -1,35 +1,66 @@
 module Valhammer
   module Validations
-    VALHAMMER_DEFAULT_OPTS = { presence: true, uniqueness: true,
-                               numericality: true, length: true,
-                               inclusion: true }.freeze
+    class DisabledFieldConfig
+      def self.perform(&bl)
+        new.tap { |obj| obj.instance_eval(&bl) if block_given? }.to_opts
+      end
+
+      def initialize
+        @disabled_validations = {}
+      end
+
+      ALL = %i(presence uniqueness inclusion length numericality).freeze
+
+      def disable(opts)
+        opts = { opts => ALL } if opts.is_a?(Symbol)
+
+        opts.each do |k, v|
+          @disabled_validations[k] ||= []
+          @disabled_validations[k] += Array(v)
+        end
+      end
+
+      def to_opts
+        @disabled_validations.stringify_keys.transform_values do |v|
+          Hash[v.zip(Array.new(v.length, false))]
+        end
+      end
+    end
 
     VALHAMMER_EXCLUDED_FIELDS = %w(created_at updated_at).freeze
 
-    private_constant :VALHAMMER_DEFAULT_OPTS, :VALHAMMER_EXCLUDED_FIELDS
+    private_constant :VALHAMMER_EXCLUDED_FIELDS, :DisabledFieldConfig
 
-    def valhammer(opts = {})
+    def valhammer(&bl)
       @valhammer_indexes = connection.indexes(table_name)
-      opts = VALHAMMER_DEFAULT_OPTS.merge(opts)
+      config = DisabledFieldConfig.perform(&bl)
+
       columns_hash.each do |name, column|
-        valhammer_validate(name, column, opts)
+        valhammer_validate(name, column, config)
       end
     end
 
     private
 
-    def valhammer_validate(name, column, opts)
+    def valhammer_validate(name, column, config)
       return if valhammer_exclude?(name)
 
       assoc_name = valhammer_assoc_name(name)
-      if assoc_name.nil?
-        validations = valhammer_validations(column, opts)
-        validates(name, validations) unless validations.empty?
-        return
-      end
+      return valhammer_validate_assoc(assoc_name, column, config) if assoc_name
 
+      opts = valhammer_field_config(config, name)
+      validations = valhammer_validations(column, opts)
+      validates(name, validations) unless validations.empty?
+    end
+
+    def valhammer_validate_assoc(assoc_name, column, config)
+      opts = valhammer_field_config(config, assoc_name)
       return if column.null || !opts[:presence]
       validates(assoc_name, presence: true)
+    end
+
+    def valhammer_field_config(config, field)
+      Hash.new(true).merge(config[field.to_s] || {})
     end
 
     def valhammer_validations(column, opts)
@@ -66,7 +97,6 @@ module Valhammer
       return unless unique_keys.one?
 
       scope = unique_keys.first.columns[0..-2]
-
       validations[:uniqueness] = valhammer_unique_opts(scope)
     end
 
@@ -80,9 +110,7 @@ module Valhammer
     end
 
     def valhammer_numeric(validations, column, opts)
-      return unless opts[:numericality]
-
-      return if defined_enums.key?(column.name)
+      return if !opts[:numericality] || defined_enums.key?(column.name)
 
       case column.type
       when :integer
@@ -96,7 +124,6 @@ module Valhammer
 
     def valhammer_length(validations, column, opts)
       return unless opts[:length] && column.type == :string && column.limit
-
       validations[:length] = { maximum: column.limit }
     end
 

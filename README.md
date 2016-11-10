@@ -82,13 +82,40 @@ Generated validations are:
 * `:length` &mdash; added to `string` columns to ensure the value fits in the
   column
 
-To disable a kind of validation, pass an option to the `valhammer` method:
+### Disabling Validators
+
+Passing a block to `valhammer` allows some selective calls to `disable` to
+customise the validators which are applied to your model:
+
+```ruby
+class Widget < ActiveRecord::Base
+  valhammer do
+    disable item_code: [:presence, :uniqueness]
+  end
+end
+```
+
+Disabling an attribute instructs Valhammer not to apply *any* validators for
+that attribute:
+
+```ruby
+class Widget < ActiveRecord::Base
+  valhammer do
+    disable :supplier_code
+  end
+end
+```
+
+When disabling validations for an association, disable the validations on the
+**association name**, not the name of the foreign key column:
 
 ```ruby
 class Widget < ActiveRecord::Base
   belongs_to :supplier
 
-  valhammer uniqueness: false
+  valhammer do
+    disable supplier: :presence
+  end
 end
 ```
 
