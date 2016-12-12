@@ -80,6 +80,11 @@ Generated validations are:
 * `:length` &mdash; added to `string` columns to ensure the value fits in the
   column
 
+**SQLite Note:** In SQLite, a `string` column has no default length restriction
+(except for the [hard limit on data size set at compile
+time](https://www.sqlite.org/limits.html)). Valhammer will not apply a `length`
+validation unless the column was created with an explicit limit.
+
 ### Disabling Validators
 
 Passing a block to `valhammer` allows some selective calls to `disable` to
