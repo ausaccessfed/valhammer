@@ -19,10 +19,8 @@
 
 Automatically validate ActiveRecord models based on the database schema.
 
-Author: Shaun Mangelsdorf
-
 ```
-Copyright 2015, Australian Access Federation
+Copyright 2015-2016, Australian Access Federation
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
@@ -81,6 +79,11 @@ Generated validations are:
   `only_integer` option set appropriately
 * `:length` &mdash; added to `string` columns to ensure the value fits in the
   column
+
+**SQLite Note:** In SQLite, a `string` column has no default length restriction
+(except for the [hard limit on data size set at compile
+time](https://www.sqlite.org/limits.html)). Valhammer will not apply a `length`
+validation unless the column was created with an explicit limit.
 
 ### Disabling Validators
 
