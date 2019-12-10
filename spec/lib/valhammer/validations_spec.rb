@@ -90,11 +90,12 @@ RSpec.describe Valhammer::Validations do
   end
 
   context 'with a unique index' do
+
     it { is_expected.not_to include(a_validator_for(:id, :uniqueness)) }
     it { is_expected.to include(a_validator_for(:identifier, :uniqueness)) }
     it { is_expected.not_to include(a_validator_for(:mail, :uniqueness)) }
 
-    it 'creates a case sensitive validator' do
+    it 'creates a case insensitive validator' do
       opts = { case_sensitive: true, allow_nil: true }
 
       expect(subject)

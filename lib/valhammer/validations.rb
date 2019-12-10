@@ -97,13 +97,13 @@ module Valhammer
       return unless unique_keys.one?
 
       scope = unique_keys.first.columns[0..-2]
-      validations[:uniqueness] = valhammer_unique_opts(scope)
+      validations[:uniqueness] = valhammer_unique_opts(column, scope)
     end
 
-    def valhammer_unique_opts(scope)
+    def valhammer_unique_opts(column, scope)
       nullable = scope.select { |c| columns_hash[c].null }
-
-      opts = { allow_nil: true }
+      opts = { allow_nil: true,
+               case_sensitive: case_sensitive?(column.collation) }
       opts[:scope] = scope.map(&:to_sym) if scope.any?
       opts[:if] = -> { nullable.all? { |c| send(c) } } if nullable.any?
       opts
@@ -149,6 +149,11 @@ module Valhammer
     def valhammer_assoc_name(field)
       reflect_on_all_associations(:belongs_to)
         .find { |a| a.foreign_key == field }.try(:name)
+    end
+
+    def case_sensitive?(column)
+      return true unless column.respond_to?(:case_sensitive?)
+      column.case_sensitive?
     end
   end
 end
