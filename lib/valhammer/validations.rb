@@ -153,6 +153,7 @@ module Valhammer
 
     def case_sensitive?(column)
       return true unless column.respond_to?(:case_sensitive?)
+
       column.case_sensitive?
     end
   end
