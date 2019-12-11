@@ -103,7 +103,7 @@ module Valhammer
     def valhammer_unique_opts(column, scope)
       nullable = scope.select { |c| columns_hash[c].null }
       opts = { allow_nil: true,
-               case_sensitive: case_sensitive?(column.collation) }
+               case_sensitive: case_sensitive?(column) }
       opts[:scope] = scope.map(&:to_sym) if scope.any?
       opts[:if] = -> { nullable.all? { |c| send(c) } } if nullable.any?
       opts
