@@ -64,8 +64,6 @@ module Valhammer
     end
 
     def valhammer_validations(column, opts)
-      logger.debug("Valhammer generating options for #{valhammer_info(column)}")
-
       validations = {}
       valhammer_presence(validations, column, opts)
       valhammer_inclusion(validations, column, opts)
@@ -73,8 +71,10 @@ module Valhammer
       valhammer_numeric(validations, column, opts)
       valhammer_length(validations, column, opts)
 
-      logger.debug("Valhammer options for #{valhammer_log_key(column)} " \
-                   "are: #{validations.inspect}")
+      if Valhammer.config.verbose?
+        logger.debug("Valhammer options for #{valhammer_log_key(column)} " \
+                     "are: #{validations.inspect}")
+      end
       validations
     end
 

@@ -291,6 +291,58 @@ RSpec.describe Valhammer::Validations do
     end
   end
 
+  describe 'logging' do
+    before do
+      hammerable =
+        Class.new(ActiveRecord::Base) do
+          self.table_name = :organisations
+        end
+
+      def self.logger
+        # Hook for specs to spy on log output
+      end
+
+      stub_const 'Hammerable', hammerable
+    end
+
+    context 'when verbose' do
+      around do |example|
+        Valhammer.config.verbose = true
+        example.run
+      ensure
+        Valhammer.config.verbose = false
+      end
+
+      it 'logs information about validations' do
+        logger = spy(:debug)
+        allow(Hammerable).to receive(:logger).and_return(logger)
+
+        Hammerable.valhammer
+
+        expect(logger).to have_received(:debug).with(
+          'Valhammer options for `organisations`.`name` are: {:presence=>true}'
+        )
+        expect(logger).to have_received(:debug).with(
+          'Valhammer options for `organisations`.`country` are: {:presence=>true}'
+        )
+        expect(logger).to have_received(:debug).with(
+          'Valhammer options for `organisations`.`city` are: {:presence=>true}'
+        )
+      end
+    end
+
+    context 'when quiet' do
+      it 'does not log' do
+        logger = spy(:debug)
+        allow(Hammerable).to receive(:logger).and_return(logger)
+
+        Hammerable.valhammer
+
+        expect(logger).not_to have_received(:debug)
+      end
+    end
+  end
+
   context 'sanity check' do
     let(:organisation) do
       Organisation.create!(name: 'Enhanced Collaborative Methodologies Pty Ltd',

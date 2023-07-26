@@ -264,6 +264,14 @@ end
 In this case, it is not possible for valhammer to determine the behaviour of the
 `where` clause, so the validation must be manually created.
 
+## Logging
+
+To make Valhammer tell you exactly what it's doing, turn on verbose mode:
+
+```ruby
+Valhammer.config.verbose = true
+```
+
 ## Contributing
 
 Refer to [GitHub Flow](https://guides.github.com/introduction/flow/) for
