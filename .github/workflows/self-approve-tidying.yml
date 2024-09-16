@@ -1,0 +1,19 @@
+name: Self-approve tidying
+on:
+  issue_comment:
+    types: [created]
+jobs:
+  all:
+    permissions:
+      id-token: write
+      contents: read
+      statuses: write
+      issues: read
+      pull-requests: write
+    secrets:
+      REPO_SCOPED_TOKEN: ${{secrets.ALL_REPO_SCOPED_TOKEN_2}}
+    uses: ausaccessfed/workflows/.github/workflows/self-approve-tidying.yml@main
+    with:
+      event_name: ${{ github.event_name }}
+      event_comment_id: ${{ github.event.comment.id }}
+      event_comment_body: ${{ github.event.comment.body }}
