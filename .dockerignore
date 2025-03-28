@@ -1,0 +1,15 @@
+/.git
+/.github
+/.idea
+/.vscode
+/Dockerfile
+/compose.yml
+/coverage
+/docs
+/log
+/public/assets
+/tmp
+./coverage
+.env*
+node_modules
+#EOF_DISTRIBUTION

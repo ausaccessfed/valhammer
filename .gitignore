@@ -1,3 +1,17 @@
+public/*
+coverage
+tmp
+log
+vendor
+.DS_Store
+dump.rdb
+.idea
+.env
+!.*env*.dist
+.vscode/*
+!**/*vscode/extensions.json
+node_modules
+#EOF_DISTRIBUTION
 /.bundle/
 /.yardoc
 /Gemfile.lock
