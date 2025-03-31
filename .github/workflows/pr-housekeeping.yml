@@ -9,6 +9,8 @@ jobs:
       contents: write
       issues: write
       pull-requests: write
-    secrets:
-      REPO_SCOPED_TOKEN: ${{secrets.ALL_REPO_SCOPED_TOKEN_2}}
-    uses: ausaccessfed/workflows/.github/workflows/pr-housekeeping.yml@main
+    runs-on: ubuntu-latest
+    steps:
+      - uses: ausaccessfed/workflows/.github/actions/pr-housekeeping@main
+        with:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
