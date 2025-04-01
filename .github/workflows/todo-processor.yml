@@ -1,0 +1,24 @@
+name: Todo processor
+on:
+  push:
+  workflow_dispatch:
+    inputs:
+      BACKFILL:
+        description: 'If true, will backfill all TODOs in the repo'
+        type: boolean
+        required: true
+jobs:
+  todo_processor:
+    runs-on: ubuntu-latest
+    name: 'TODO Processing'
+    permissions:
+      id-token: write
+      contents: write
+      issues: write
+      pull-requests: write
+    steps:
+      - uses: ausaccessfed/workflows/.github/actions/todo-processor@main
+        with:
+          GPG_PRIVATE_KEY: ${{ secrets.RENOVATE_GPG_PRIVATE_KEY }}
+          BACKFILL: ${{ inputs.BACKFILL }}
+          GITHUB_TOKEN: ${{ secrets.VALHAMMER_REPO_SCOPED_TOKEN }}
