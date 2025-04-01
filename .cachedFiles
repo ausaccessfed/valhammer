@@ -6,7 +6,7 @@ workflows/distributions/.github/ISSUE_TEMPLATE/1-enhancement.md
 workflows/distributions/.github/ISSUE_TEMPLATE/2-bug.md
 workflows/distributions/.github/ISSUE_TEMPLATE/9-other.md
 workflows/distributions/.github/ISSUE_TEMPLATE/config.yml
-workflows/distributions/.github/renovate-config.json
+workflows/distributions/.github/renovate-config.js
 workflows/distributions/.github/workflows/deploy.yml
 workflows/distributions/.github/workflows/pr-housekeeping.yml
 workflows/distributions/.github/workflows/renovate.yml
