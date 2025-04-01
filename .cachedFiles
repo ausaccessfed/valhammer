@@ -6,8 +6,10 @@ workflows/distributions/.github/ISSUE_TEMPLATE/1-enhancement.md
 workflows/distributions/.github/ISSUE_TEMPLATE/2-bug.md
 workflows/distributions/.github/ISSUE_TEMPLATE/9-other.md
 workflows/distributions/.github/ISSUE_TEMPLATE/config.yml
+workflows/distributions/.github/renovate-config.json
 workflows/distributions/.github/workflows/deploy.yml
 workflows/distributions/.github/workflows/pr-housekeeping.yml
+workflows/distributions/.github/workflows/renovate.yml
 workflows/distributions/.github/workflows/self-approve-tidying.yml
 workflows/distributions/.github/workflows/sync-development.yml
 workflows/distributions/.github/workflows/todo-processor.yml
