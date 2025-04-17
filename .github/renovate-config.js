@@ -28,4 +28,5 @@ const common = {
     ],
 }
 //EOF_DISTRIBUTION
-module.exports = {
+
+module.exports = common
