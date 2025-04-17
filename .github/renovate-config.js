@@ -1,4 +1,4 @@
-module.exports = {
+const common = {
     "extends": [
         "github>ausaccessfed/workflows//.github/renovate-config.json"
     ],
@@ -27,3 +27,5 @@ module.exports = {
         "**/.terraform/**"
     ],
 }
+//EOF_DISTRIBUTION
+module.exports = {
