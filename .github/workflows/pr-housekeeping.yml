@@ -5,12 +5,8 @@ on:
 jobs:
   pr_housekeeping:
     name: 'PR Housekeeping'
-    permissions:
-      contents: write
-      issues: write
-      pull-requests: write
     runs-on: ubuntu-latest
     steps:
       - uses: ausaccessfed/workflows/.github/actions/pr-housekeeping@main
         with:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.ANSIBLE_REPO_SCOPED_TOKEN }}
