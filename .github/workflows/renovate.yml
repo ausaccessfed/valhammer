@@ -19,6 +19,8 @@ on:
 jobs:
   renovate:
     runs-on: ubuntu-latest
+    permissions:
+      id-token: write
     steps:
       - uses: ausaccessfed/workflows/.github/actions/renovate@main
         with:
