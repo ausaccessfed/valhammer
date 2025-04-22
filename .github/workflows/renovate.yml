@@ -19,12 +19,6 @@ on:
 jobs:
   renovate:
     runs-on: ubuntu-latest
-    permissions:
-      contents: write
-      id-token: write
-      pull-requests: write
-      statuses: write
-      issues: write
     steps:
       - uses: ausaccessfed/workflows/.github/actions/renovate@main
         with:
