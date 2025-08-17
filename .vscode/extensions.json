@@ -1,22 +1,13 @@
 {
   "recommendations": [
     //html
-    "formulahendry.auto-close-tag",
-    "formulahendry.auto-complete-tag",
-    "formulahendry.auto-rename-tag",
     "ecmel.vscode-html-css",
     "redhat.vscode-xml",
-    "redhat.vscode-yaml",
-
-    // shell
-    "foxundermoon.shell-format",
 
     // css
     "mrmlnc.vscode-scss",
-    "stylelint.vscode-stylelint",
 
     // js
-    "steoates.autoimport",
     "mgmcdermott.vscode-language-babel",
     "dbaeumer.vscode-eslint",
     "Orta.vscode-jest",
@@ -24,7 +15,6 @@
     "christian-kohler.npm-intellisense",
 
     // linting
-    "dbaeumer.vscode-eslint",
     "rvest.vs-code-prettier-eslint",
 
     //jinja
@@ -36,27 +26,15 @@
     // coverage
     "ryanluker.vscode-coverage-gutters",
 
-    //env
-    "mikestead.dotenv",
-
-    // editorconfig
-    "EditorConfig.EditorConfig",
-
     // ruby
     "rubocop.vscode-rubocop",
     "Shopify.ruby-lsp",
     "KoichiSasada.vscode-rdbg",
 
     // random
-    "ue.alphabetical-sorter",
     "kisstkondoros.vscode-gutter-preview",
     "christian-kohler.path-intellisense",
-    "alefragnani.project-manager",
-    "cssho.vscode-svgviewer",
-    "wayou.vscode-todo-highlight",
     "aaron-bond.better-comments",
-    "vscode-icons-team.vscode-icons",
-    "tomoki1207.pdf",
 
     //test
     "ms-vscode.test-adapter-converter",
@@ -65,13 +43,9 @@
 
     //github
     "github.vscode-github-actions",
-    "GitHub.copilot",
-    "GitHub.copilot-chat",
 
     // git
-    "codezombiech.gitignore",
     "qezhu.gitlink",
-    "eamodio.gitlens",
 
     // terraform
     "hashicorp.terraform",
@@ -86,7 +60,6 @@
     // markdown
     "yzhang.markdown-all-in-one",
     "bierner.markdown-mermaid",
-    "DavidAnson.vscode-markdownlint",
 
     // sql
     "dorzey.vscode-sqlfluff"
