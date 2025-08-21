@@ -27,7 +27,6 @@
     "ryanluker.vscode-coverage-gutters",
 
     // ruby
-    "rubocop.vscode-rubocop",
     "Shopify.ruby-lsp",
     "KoichiSasada.vscode-rdbg",
 
@@ -36,16 +35,9 @@
     "christian-kohler.path-intellisense",
     "aaron-bond.better-comments",
 
-    //test
-    "ms-vscode.test-adapter-converter",
-    "hbenl.vscode-test-explorer",
-    "connorshea.vscode-ruby-test-adapter",
-
     //github
+    "github.vscode-pull-request-github",
     "github.vscode-github-actions",
-
-    // git
-    "qezhu.gitlink",
 
     // terraform
     "hashicorp.terraform",
