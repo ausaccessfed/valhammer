@@ -41,7 +41,6 @@
 
     // terraform
     "hashicorp.terraform",
-    "4ops.terraform",
 
     //helm
     "Tim-Koehler.helm-intellisense",
