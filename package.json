@@ -4,6 +4,7 @@
   "dependencies": {},
   "version": "0.1.0",
   "devDependencies": {
+    "@lavamoat/preinstall-always-fail": "2.1.1",
     "eslint": "9.23.0",
     "eslint-config-prettier": "9.1.0",
     "eslint-plugin-babel": "5.3.1",
