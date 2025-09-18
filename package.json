@@ -1,7 +1,6 @@
 {
   "name": "app-name",
   "private": true,
-  "dependencies": {},
   "version": "0.1.0",
   "devDependencies": {
     "@lavamoat/preinstall-always-fail": "2.1.1",
@@ -15,5 +14,6 @@
   },
   "scripts": {
     "lint": "eslint . --ignore-path .eslintignore --quiet"
-  }
+  },
+  "packageManager": "yarn@4.9.4"
 }
