@@ -21,6 +21,7 @@ workflows/distributions/.prettierrc
 workflows/distributions/.streerc
 workflows/distributions/.vscode/extensions.json
 workflows/distributions/.yarnrc.yml
+workflows/distributions/Makefile
 workflows/distributions/eslint.config.js
 workflows/distributions/package.json
 workflows/distributions/trivy.yaml
