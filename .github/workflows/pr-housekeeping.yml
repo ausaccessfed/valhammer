@@ -5,7 +5,7 @@ on:
 jobs:
   pr_housekeeping:
     name: 'PR Housekeeping'
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-slim
     steps:
       - uses: ausaccessfed/workflows/.github/actions/pr-housekeeping@main
         with:
