@@ -14,8 +14,6 @@ on:
         options:
           - info
           - debug
-  schedule:
-    - cron: '0 */6 * * *' # Every six hours
 jobs:
   renovate:
     runs-on: ubuntu-latest
