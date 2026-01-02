@@ -1,7 +1,5 @@
 {
   "recommendations": [
-    //html
-    "ecmel.vscode-html-css",
     "redhat.vscode-xml",
 
     // css
