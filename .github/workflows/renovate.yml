@@ -15,7 +15,7 @@ on:
           - info
           - debug
   schedule:
-    - cron: '30 22 * * 2' # Wednesday 8:30am AEST (Brisbane time.)
+    - cron: '0,20,40 22 * * 2' # Wednesday 8:00am, 8:20am, & 8:40am AEST (Brisbane time.)
 jobs:
   renovate:
     runs-on: ubuntu-latest
