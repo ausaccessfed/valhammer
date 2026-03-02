@@ -1,7 +1,4 @@
 const common = {
-    "extends": [
-        "github>ausaccessfed/workflows//.github/renovate-config.json"
-    ],
     "username": "aaf-terraform",
     "gitAuthor": "aaf-terraform <fishwhack9000+terraform@gmail.com>",
     "onboarding": false,
