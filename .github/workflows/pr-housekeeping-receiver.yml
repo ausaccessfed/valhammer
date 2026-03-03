@@ -1,0 +1,20 @@
+name: PR Housekeeping receiver
+on:
+  repository_dispatch:
+    types: [pr-housekeeping-dispatch]
+jobs:
+  pr_housekeeping:
+    name: 'PR Housekeeping receiver'
+    runs-on: ubuntu-slim
+    environment: privileged
+    steps:
+
+      - uses: ausaccessfed/workflows/.github/actions/init@main
+        with:
+          BRANCH_NAME: ${{ github.event.client_payload.ref }}
+          FETCH_DEPTH: "0"
+
+      - uses: ausaccessfed/workflows/.github/actions/pr-housekeeping@main
+        with:
+          GITHUB_TOKEN: ${{ secrets.ANSIBLE_REPO_SCOPED_TOKEN }}
+          PULL_NUMBER: ${{ github.event.client_payload.pr_number }}
