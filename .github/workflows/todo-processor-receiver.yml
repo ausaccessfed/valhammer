@@ -1,0 +1,16 @@
+name: Todo processor receiver
+on:
+  repository_dispatch:
+    types: [todo-processor-dispatch]
+jobs:
+  todo_processor:
+    name: "Todo processor receiver"
+    runs-on: ubuntu-slim
+    environment: privileged
+    steps:
+      - uses: ausaccessfed/workflows/.github/actions/todo-processor@main
+        with:
+          GPG_PRIVATE_KEY: ${{ secrets.RENOVATE_GPG_PRIVATE_KEY }}
+          GITHUB_TOKEN: ${{ secrets.TERRAFORM_REPO_SCOPED_TOKEN }}
+          BRANCH_NAME: ${{ github.event.client_payload.ref }}
+          BACKFILL: ${{ github.event.client_payload.BACKFILL }}

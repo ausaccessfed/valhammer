@@ -1,0 +1,20 @@
+name: Todo processor dispatch
+on:
+  push:
+  workflow_dispatch:
+    inputs:
+      BACKFILL:
+        type: boolean
+        required: false
+
+jobs:
+  dispatch:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: ausaccessfed/workflows/.github/actions/dispatcher@main
+        with:
+          EVENT_TYPE: 'todo-processor-dispatch'
+          CLIENT_PAYLOAD_JSON: |
+            {
+              "BACKFILL": ${{ github.event_name == 'workflow_dispatch' && inputs.BACKFILL || false }}
+            }
