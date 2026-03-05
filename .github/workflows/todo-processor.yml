@@ -11,6 +11,7 @@ jobs:
   todo_processor:
     runs-on: ubuntu-latest
     name: 'TODO Processing'
+    environment: privileged
     permissions:
       id-token: write
       contents: write
