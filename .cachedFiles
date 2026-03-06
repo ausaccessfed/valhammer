@@ -8,11 +8,13 @@ workflows/distributions/.github/ISSUE_TEMPLATE/9-other.md
 workflows/distributions/.github/ISSUE_TEMPLATE/config.yml
 workflows/distributions/.github/renovate-config.js
 workflows/distributions/.github/workflows/deploy.yml
-workflows/distributions/.github/workflows/pr-housekeeping.yml
+workflows/distributions/.github/workflows/pr-housekeeping-dispatcher.yml
+workflows/distributions/.github/workflows/pr-housekeeping-receiver.yml
 workflows/distributions/.github/workflows/renovate.yml
 workflows/distributions/.github/workflows/self-approve-tidying.yml
 workflows/distributions/.github/workflows/sync-development.yml
-workflows/distributions/.github/workflows/todo-processor.yml
+workflows/distributions/.github/workflows/todo-processor-dispatcher.yml
+workflows/distributions/.github/workflows/todo-processor-receiver.yml
 workflows/distributions/.gitignore
 workflows/distributions/.hadolint.yaml
 workflows/distributions/.nvmrc
