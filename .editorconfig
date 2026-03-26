@@ -1,6 +1,9 @@
 # top-most EditorConfig file
 root = true
 
+[*Makefile*]
+indent_style = tab
+
 # Unix-style newlines with a newline ending every file
 [*]
 end_of_line = lf
