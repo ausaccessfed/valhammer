@@ -77,6 +77,7 @@ const common = {
             ]
         }
     ],
+    "ignoreDeps": ["ausaccessfed/workflows"],
     "packageRules": [
         {
             "matchPackageNames": ["bcrypt"],
