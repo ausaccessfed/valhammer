@@ -19,3 +19,4 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.TERRAFORM_REPO_SCOPED_TOKEN }}
           BRANCH_NAME: ${{ github.event.client_payload.ref }}
           BACKFILL: ${{ github.event.client_payload.BACKFILL }}
+          SHA: ${{ github.event.client_payload.sha }}
