@@ -77,6 +77,7 @@ const common = {
             ]
         }
     ],
+    "ignoreDeps": ["ausaccessfed/workflows"],
     "packageRules": [
         {
             "matchPackageNames": ["bcrypt"],
@@ -117,7 +118,8 @@ const common = {
             "matchFileNames": ["Dockerfile"],
             "matchDepTypes": ["debian"],
             "groupName": "debian",
-            "addLabels": ["dockerDependencies"]
+            "addLabels": ["dockerDependencies"],
+            "minimumReleaseAge": "0 days"
         },
         {
             "matchDatasources": ["rubygems", "npm"],

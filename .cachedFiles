@@ -26,5 +26,4 @@ workflows/distributions/.yarnrc.yml
 workflows/distributions/Makefile
 workflows/distributions/eslint.config.js
 workflows/distributions/package.json
-workflows/distributions/trivy.yaml
 workflows/distributions/yarn.lock
