@@ -1,26 +1,9 @@
 # Valhammer
 
-[![Gem Version][GV img]][Gem Version]
-[![Build Status][BS img]][Build Status]
-[![Dependency Status][DS img]][Dependency Status]
-[![Code Climate][CC img]][Code Climate]
-[![Coverage Status][CS img]][Code Climate]
-
-[Gem Version]: https://rubygems.org/gems/valhammer
-[Build Status]: https://codeship.com/projects/91215
-[Dependency Status]: https://gemnasium.com/ausaccessfed/valhammer
-[Code Climate]: https://codeclimate.com/github/ausaccessfed/valhammer
-
-[GV img]: https://img.shields.io/gem/v/valhammer.svg
-[BS img]: https://img.shields.io/codeship/eb0d3cd0-0cd1-0133-3c85-7aae0ba3591b/develop.svg
-[DS img]: https://img.shields.io/gemnasium/ausaccessfed/valhammer.svg
-[CC img]: https://img.shields.io/codeclimate/github/ausaccessfed/valhammer.svg
-[CS img]: https://img.shields.io/codeclimate/coverage/github/ausaccessfed/valhammer.svg
-
 Automatically validate ActiveRecord models based on the database schema.
 
 ```
-Copyright 2015-2016, Australian Access Federation
+Copyright 2015-2026, Australian Access Federation
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
@@ -271,8 +254,3 @@ To make Valhammer tell you exactly what it's doing, turn on verbose mode:
 ```ruby
 Valhammer.config.verbose = true
 ```
-
-## Contributing
-
-Refer to [GitHub Flow](https://guides.github.com/introduction/flow/) for
-help contributing to this project.
