@@ -2,6 +2,9 @@ name: Todo processor dispatch
 on:
   pull_request:
     types: [opened]
+  push:
+    branches-ignore:
+      - main
   workflow_dispatch:
     inputs:
       BACKFILL:
