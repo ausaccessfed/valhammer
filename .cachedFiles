@@ -11,7 +11,6 @@ workflows/distributions/.github/workflows/deploy.yml
 workflows/distributions/.github/workflows/pr-housekeeping-dispatcher.yml
 workflows/distributions/.github/workflows/pr-housekeeping-receiver.yml
 workflows/distributions/.github/workflows/renovate.yml
-workflows/distributions/.github/workflows/self-approve-tidying.yml
 workflows/distributions/.github/workflows/sync-development.yml
 workflows/distributions/.github/workflows/todo-processor-dispatcher.yml
 workflows/distributions/.github/workflows/todo-processor-receiver.yml
