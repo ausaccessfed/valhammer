@@ -6,6 +6,7 @@ jobs:
   pr_housekeeping:
     name: 'PR Housekeeping dispatch'
     runs-on: ubuntu-slim
+    if: github.actor != 'dependabot[bot]'
     steps:
       - uses: ausaccessfed/workflows/.github/actions/dispatcher@main
         with:
