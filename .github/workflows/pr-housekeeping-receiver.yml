@@ -7,13 +7,9 @@ jobs:
     name: 'PR Housekeeping receiver'
     runs-on: ubuntu-slim
     environment: privileged
+    permissions:
+      contents: read
     steps:
-
-      - uses: ausaccessfed/workflows/.github/actions/init@main
-        with:
-          BRANCH_NAME: ${{ github.event.client_payload.ref }}
-          FETCH_DEPTH: "0"
-
       - uses: ausaccessfed/workflows/.github/actions/pr-housekeeping@main
         with:
           GITHUB_TOKEN: ${{ secrets.ANSIBLE_REPO_SCOPED_TOKEN }}

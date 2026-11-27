@@ -2,6 +2,9 @@ name: Todo processor dispatch
 on:
   pull_request:
     types: [opened]
+  push:
+    branches-ignore:
+      - main
   workflow_dispatch:
     inputs:
       BACKFILL:
@@ -10,7 +13,11 @@ on:
 
 jobs:
   dispatch:
-    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      pull-requests: read
+    runs-on: ubuntu-slim
+    if: github.actor != 'dependabot[bot]'
     steps:
       - uses: ausaccessfed/workflows/.github/actions/dispatcher@main
         with:
