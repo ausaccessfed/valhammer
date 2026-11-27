@@ -25,8 +25,7 @@ jobs:
   renovate:
     runs-on: ubuntu-latest
     environment: privileged
-    permissions:
-      id-token: write
+    permissions: {}
     steps:
       - uses: ausaccessfed/workflows/.github/actions/renovate@main
         with:
