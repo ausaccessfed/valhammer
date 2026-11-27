@@ -5,13 +5,9 @@ on:
 jobs:
   todo_processor:
     name: "Todo processor receiver"
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-slim
     environment: privileged
-    permissions:
-      id-token: write
-      contents: write
-      issues: write
-      pull-requests: write
+    permissions: {}
     steps:
       - uses: ausaccessfed/workflows/.github/actions/todo-processor@main
         with:
